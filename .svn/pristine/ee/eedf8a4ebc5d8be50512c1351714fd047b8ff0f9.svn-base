@@ -1,0 +1,75 @@
+var debugMode = true;
+var appUpdateCheckUrl = 'http://172.30.40.242/data/static/update.json';
+var APIS = {
+	api: {
+		url :"http://172.30.40.242/"
+	},
+	login: {
+		baseRrl : "http://172.30.40.242/mobile/Account/login",
+		method : "GET"
+	},
+	logout: {
+		baseRrl : "http://172.30.40.242/mobile/Account/logout",
+		method : "GET"
+	},
+	setting: {
+		baseRrl : "http://172.30.40.242/mobile/Account/info",
+		method : "GET"
+	},
+	bind: {
+		baseRrl : "http://172.30.40.242/mobile/Account/binding",
+		method : "GET"
+	},
+	message: {
+		baseRrl : "http://172.30.40.242/mobile/Message/list",
+		method : "GET"
+	},
+	mark: {
+		baseRrl: "http://172.30.40.242/mobile/Message/mark",
+		method : "GET"
+	},
+	data: {
+		baseRrl: "http://172.30.40.242/mobile/Data/center",
+		method : "GET"
+	},
+	paymentAccept: {
+		baseRrl: "http://172.30.40.242/mobile/Payment/prove",
+		method : "GET"
+	},
+	paymentReject: {
+		baseRrl: "http://172.30.40.242/mobile/Payment/unprove",
+		method : "GET"
+	},
+	search:{
+		baseRrl: "http://172.30.40.242/mobile/Offer/search",
+		method : "GET"
+	},
+	setStatus:{
+		baseRrl: "http://172.30.40.242/mobile/Offer/setStatus",
+		method : "GET"
+	},
+	setCaps:{
+		baseRrl: "http://172.30.40.242/mobile/Offer/EditCaps",
+		method : "GET"
+	},
+	offerCountAff:{
+		baseRrl: "http://172.30.40.242/mobile/Offer/getoffercountaff",
+		method : "GET"
+	},
+	geoList:{
+		baseRrl: "http://172.30.40.242/mobile/Offer/getGeoList",
+		method : "GET"
+	},
+	payout:{
+		baseRrl: "http://172.30.40.242/mobile/Offer/settask",
+		method : "POST"
+	},
+	redirect:{
+		baseRrl: "http://172.30.40.242/mobile/Offer/setRedirect",
+		method : "GET"
+	},
+	setGeo:{
+		baseRrl: "http://172.30.40.242/mobile/offer/EditGeo",
+		method : "GET"
+	}
+}

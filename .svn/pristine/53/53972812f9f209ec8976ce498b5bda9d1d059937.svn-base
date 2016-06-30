@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Setting</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/art-template-min.js"></script>
+		<script src="../js/offer-list.js"></script>
+		<style>
+			html,body {
+				background-color: #ffffff;
+				color:#ccc;
+				font-family: "Roboto-Light";
+				height: 100%;
+			}
+		</style>
+		<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: true  
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav offerHead">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+				<span class="detailTitle">Offer list</span>
+			</a>
+  			<span class="mui-icon mui-icon-reload mui-pull-right reload"></span>
+		</header>
+		<div class="mui-content offerContent" id="offerListContent">
+			<ul class="mui-table-view" id="renderArea">
+			</ul>
+		</div>
+	<script id="offerList" type="text/html">
+	<%for(var index = 0; index < data.length; index++) {%>
+	   <li class="mui-table-view-cell">
+			<div class="mui-navigate-right"  id="<%=index%>">
+				<a href="#">
+					<img class="mui-media-object mui-pull-left" src="<%=getAPI()%>
+<%=data[index].logo%>" width="100%">
+					<div class="mui-media-body">
+						<p class="offerName"><%=#data[index].name%></p>
+						<p class='offerId' id="offerId<%=index%>"><%=#data[index].id%></p>
+						<p class="adver"><%=data[index].advertiser[0].company%></p>
+					</div>
+				</a>
+			</div>
+	  </li>
+	<%}%>
+	</script>
+		<script>
+		var keyWords = "";
+		//刷新页面
+		document.addEventListener('loadAgain',function() {
+			showWaiting('Loading...');
+			offerList.search(keyWords);
+		})
+		
+		template.helper('getAPI', function () {
+			var api = APIS.api.url;
+			return api;
+		})
+		mui.ready(function() {
+			mui.plusReady(function() {
+				var currentWebview = plus.webview.currentWebview();
+				var data = currentWebview.data;
+				keyWords = currentWebview.keyWords;
+				//渲染
+				var Html = template('offerList', data);
+				document.getElementById("renderArea").innerHTML = Html;
+				//添加reload事件
+				mui("body").on("tap", ".reload", reloadPage);
+				//隐藏滚动条
+				plus.webview.currentWebview().setStyle({scrollIndicator:'none'}); 
+			})
+		})
+		mui(".mui-content").on("tap", ".mui-navigate-right", function() {
+			var thisItem = this.innerHTML;
+			var Id = this.id;
+			var offerId = document.getElementById("offerId" + Id).innerText;
+			mui.openWindow({
+				id : "offer-detail.html",
+				url: "offer-detail.html",
+				preload: false,
+				waiting:{
+				  autoShow: false,//自动显示等待框，默认为true
+				  title:'Loading...'//等待对话框上显示的提示内容
+				},
+				extras:{
+					offerItem: thisItem,
+					offerId: offerId
+				},
+			   show:{
+			      autoShow:true,//页面loaded事件发生后自动显示，默认为true
+			   }
+			});
+		})
+		</script>
+	</body>
+</html>

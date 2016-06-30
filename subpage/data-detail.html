@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Setting</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<link rel="stylesheet" href="../css/style.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/art-template-min.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<!--<script src="../js/app.js"></script>-->
+		<script src="../js/data-detail.js"></script>
+		<style>
+			html,body {
+				background-color: #ededed;
+				color:#ccc;
+				font-family: "Roboto-Light";
+				height: 100%;
+			}
+		</style>
+		<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: true  
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav" id="data-detail">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">&nbsp;&nbsp;&nbsp;&nbsp;</a>
+  			<h1 id="dataSort" class="mui-title"><span id="sortedName"></span><span id="trigle" class="downtrigle"></h1>
+  			<div class="mui-backdrop" id="mui-backdrop">
+	  			<ul class="mui-table-view dataSearch">
+	  				<li class="mui-table-view-cell" id="revenue">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Revenue
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" id="cost">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>
+	  						<span id="affAR">Cost</span>
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" id="profit">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Profit
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" id="clicks">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Clicks
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" id="conversions">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Conversions
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" id="cr">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>CR
+	  					</a>
+	  				</li>
+	  			</ul>
+  			</div>
+  			<span class="mui-icon mui-icon-reload mui-pull-right reload"></span>
+		</header>
+		<div class="mui-content mui-text-center">
+			<div id="allRecive">
+				<div  class="box">
+					<p id="detailNumber"></p>
+					<p class="allAccounts" id="allAccounts"></p>
+				</div>
+			</div>
+			<ul class="mui-table-view column" id="detail">
+			</ul>
+		</div>
+		<script id="renderDetail" type="text/html">
+			<%length = data.graph.length - 1%>
+			<%for(var index = length; index >= 0; index--) {%>
+				<li class="mui-table-view-cell">
+					<span class="detailed"><%=data.graph[index].num%></span>
+					<span class="dateTime"><%=data.graph[index].date%></span>
+					<span class="allPretange"></span>
+					<span class="box" style="width:<%=data.graph[index].percent%>%"></span>
+				</li>
+			<%}%>
+		</script>
+		
+		<script>
+			var convey = "";
+			mui.ready(function() {
+				mui.plusReady(function() {
+					plus.webview.currentWebview().setStyle({scrollIndicator:'none'}); //隐藏滚动条
+					var sort = document.getElementById("dataSort");
+					var role = pubSysStorage.getData('role');
+					var muiBackdrop = document.getElementById("mui-backdrop");
+					convey = plus.webview.getWebviewById('data-detail.html').sort;
+					
+					// 如果是AFF，隐藏 revenue 和 profit选项
+					if ( role == "AFF") {
+						document.getElementById("revenue").style.display = "none";
+						document.getElementById("affAR").innerText = "Accounts receivable";
+						document.getElementById("profit").style.display = "none";
+					}
+					
+					//改变data detail title
+					document.getElementById("sortedName").innerText = convey;
+					showWaiting('Loading...');
+					
+					//改变下拉选项的active状态
+					if (convey.toLowerCase().indexOf("receivable") > 0) {
+						document.getElementById("cost").className = "mui-table-view-cell mui-active";
+						dataDeatil.load("cost");
+					} else {
+						document.getElementById(convey.toLowerCase()).className = "mui-table-view-cell mui-active";
+						dataDeatil.load(convey);
+					}
+					
+					//下拉选项hide、show
+					sort.addEventListener('tap', function() {
+						if (document.getElementById("trigle").className == "downtrigle") {
+							document.getElementById("sortedName").style.color = "#ff8023";
+							document.getElementById("trigle").style.color = "#ff8023";
+							document.getElementById("trigle").className = "uptrigle uptrigleY";
+						} else {
+							document.getElementById("trigle").style.color = "#53bbf5";
+							document.getElementById("trigle").className = "downtrigle";
+						}
+						
+						if (muiBackdrop.style.visibility == "visible") {
+							muiBackdrop.style.visibility = "hidden";
+							document.getElementById("sortedName").style.color = "#000";
+						} else {
+							muiBackdrop.style.visibility = "visible";
+						}
+					})
+					
+					//下拉框点击，改变下拉选项active状态，触发加载详情
+					mui(".dataSearch").on("tap", "a", function() {
+						var title = "";
+						if (this.parentElement.className.indexOf("mui-active") > 0) {
+							dataDeatil.hideSort();	
+						} else {
+							mui(".mui-table-view-cell").each(function() {
+								if(this.classList.contains('mui-active')) {
+									this.classList.remove('mui-active');
+								}
+							});
+							this.parentElement.className = "mui-table-view-cell mui-active";
+							title = this.innerText;
+							dataDeatil.hideSort();
+							document.getElementById("sortedName").innerText = title;
+							document.getElementById("allAccounts").innerText = title;
+							document.getElementById("sortedName").style.color = "#000";
+							showWaiting('Loading...');
+							if (title.indexOf("receivable") > 0) {
+								tilte = "Cost";
+								dataDeatil.load("cost");
+							} else {
+								dataDeatil.load(title);
+							}
+							
+						}
+					})
+			
+					//添加reload(刷新)事件
+					mui("body").on("tap", ".reload", function() {
+						loadAgain();
+					});
+		
+				})
+			})
+			
+			function loadAgain() {
+				var title = getElements("#sortedName", true).innerText;
+				showWaiting('Loading...');
+				dataDeatil.load(title);
+			}
+		</script>
+	</body>
+</html>

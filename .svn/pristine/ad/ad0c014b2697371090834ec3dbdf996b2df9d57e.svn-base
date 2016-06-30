@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Message detail</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/message-detail.js"></script>
+		<script src="../js/art-template-min.js"></script>
+		<style>
+			html,body {
+				background-color: #fff;
+				color:#ccc;
+				font-family: "Roboto-Light";
+			}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav" id="message-detail">
+			<button class="mui-btn mui-btn-link mui-btn-nav mui-pull-left" id="msgDeatilPullLeft">
+				<span class="mui-icon mui-icon-left-nav"></span><span class="detailTitle" id="detailTitle"></span>
+		  	</button>
+  			<button class="mui-btn mui-btn-link mui-btn-nav mui-pull-right">
+			    <span class="mui-icon mui-icon-arrowup" id="pre"></span>
+			    <span class="mui-icon mui-icon-arrowdown" id="next"></span>
+			</button>
+		</header>
+
+		<div class="mui-content mui-text-center" id="msgDeatilContent">
+			<ul class="mui-table-view mui-table-view-chevron" id="detailDescriptions">
+			</ul>
+			<div class="msgContent" id="detailOffers">
+			</div>
+			
+			<div class="mui-table-view mui-grid-view offerOne" id="offerOne">
+				<div class="mui-table-view-cell mui-media mui-col-xs-4">
+					<img src="../images/grayCircle.png" width="28">
+				</div>
+				<div class="mui-table-view-cell mui-media mui-col-xs-4">
+					<img src="../images/arrow.png" width="232">
+				</div>
+				<div class="mui-table-view-cell mui-media mui-col-xs-4">
+					<img src="../images/yellowcircle.png" width="28">
+				</div>
+				<div id="statusChange"></div>
+			</div>
+			
+			<div class="mui-backdrop status" id="approve"> 
+				<form class="mui-card mui-input-group">
+					<div class="modalbox">
+						<div class="formName  mui-text-center">Invoice Frequency</div>
+						<div class="mui-table-view mui-grid-view status">
+							<div class="mui-table-view-cell mui-media mui-col-xs-3">
+							</div>
+							<div class="mui-table-view-cell mui-media mui-col-xs-6" style="text-align: left;">
+								<div class="mui-input-row mui-radio mui-left">
+									<label for="radio1">Weekly</label>
+	                				<input id="radio1" name="radio" type="radio" value="weekly" checked>
+								</div><br />
+								<div class="mui-input-row mui-radio mui-left">
+									<label for="radio2">Fortnightly</label>
+	                				<input id="radio2" name="radio" type="radio" value="fortnightly">
+								</div><br />
+								<div class="mui-input-row mui-radio mui-left">
+									<label for="radio3">Monthly</label>
+	                				<input id="radio3" name="radio" type="radio" value="monthly">
+								</div><br />
+							</div>
+							<div class="mui-table-view-cell mui-media mui-col-xs-3">
+							</div>
+						</div>
+						<div class="mui-text-center"><button type="button" class="mui-btn accept modalButton" id="confirmButton">Confirm</button></div>
+					</div>
+				</form>
+			</div>
+		
+			<div class="mui-backdrop status" id="reject">
+				<div class="mui-card mui-input-group">
+					<div class="modalbox">
+						<div class="formName" id="rejectName">Problems:</div>
+						<textarea class="mui-checkbox mui-left" id="textarea" autofocus="autofocus"></textarea>
+						<p id="placeholder">Please fill in the blank</p>
+						<div class="mui-text-center">
+							<button type="button" class="mui-btn accept" id="apply">Apply</button>
+							<button type="button" class="mui-btn reject" id="cancel">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+<script id="descriptions" type="text/html">
+	<li class="mui-table-view-cell">
+		<div class="area">
+			<p class="megTitle" id="dmegTitle"><%=name%></p>
+			<p class="description" id="ddescription"><%=description%></p>
+			<p class="date" id="ddate"><%=create_time%></p>
+		</div>
+	</li>
+</script>
+	
+<script id="offers" type="text/html">
+	<%if (data.length > 1) {%>
+		<%for(var index = 0; index < data.length; index++) {%>
+			<p><span class="id">ID</span><span class="value"><%=data[index].id%></span></p>
+			<p><span class="name">NAME</span><span class="value"><%=data[index].name%></span></p>
+			<p>
+				<span class="detail">DETAIL</span>
+				<span class="value2"><%=data[index].detail%></span>
+				<span class="mui-pull-right">
+					<span class="mui-text-right from"><%=change_from%></span>
+					<img src="../images/smallarrow2.png" width="79" />
+					<span class="mui-text-right to"><%=change_to%></span>
+				</span>
+			</p>
+			<p class="line">&nbsp;</p>
+		<%}%>
+	<%}else{%>
+		<p><span class="id">ID</span><span class="value"><%=data[0].id%></span></p>
+		<p><span class="name">NAME</span><span class="value"><%=data[0].name%></span></p>
+		<p><span class="detail">DETAIL</span><span class="value"><%=data[0].detail%></span></p>
+		<p>&nbsp;</p>
+	<%}%>
+</script>
+	
+<script id="change" type="text/html">
+	<div class="mui-table-view-cell mui-media mui-col-xs-4 from">
+		<span class="mui-text-right from"><%=change_from%></span>
+	</div>
+	<div class="mui-table-view-cell mui-media mui-col-xs-4">
+	</div>
+	<div class="mui-table-view-cell mui-media mui-col-xs-4 to">
+		<span class="mui-text-right to"><%=change_to%></span>
+	</div>
+	<button type="button" class="mui-btn accept" id="acceptButton">Accept</button>
+	<button type="button" class="mui-btn reject" id="rejectButton">Reject</button>
+</script>
+
+		<script>
+		var affiliateId = "";
+		var requency = "";
+		var currentId;
+		var messageType = pubSysStorage.getData("messageType");
+		function render(data) {
+			var html1 = template('descriptions', data);
+			var html2 = template('offers', data);
+			getElements("#detailDescriptions", true).innerHTML = html1;
+			document.getElementById("detailOffers").innerHTML = html2;
+			//单条 显示change from to
+			if (data.data.length == 1) {
+				var html3 = template('change', data);
+				document.getElementById("statusChange").innerHTML = html3;
+				document.getElementById("offerOne").style.display = "block";
+				//单条，有form，显示按钮及from
+				if(data.data[0].form) {
+					var messageId = data.id;
+					var formData = data.data[0].form;
+					affiliateId = data.data[0].form.id;
+					document.getElementById("acceptButton").style.display = "inline-block";
+					document.getElementById("rejectButton").style.display = "inline-block";
+					
+					
+					//接受
+					var approveModal = document.getElementById("approve");
+					var confirmButton = document.getElementById("confirmButton");
+					var radioboxes = document.getElementsByName("radio");
+					var contentWebview = plus.webview.getWebviewById('subpage/message-content.html');
+					mui('body').on('tap', '#acceptButton', function() {
+						if (pubSysStorage.getData("period") != "") {
+							showAlert(pubSysStorage.getData("period"), function(){
+							}, "YeahMobiAPP", "Done" );
+						} else {
+							approveModal.style.display = "block";
+							confirmButton.style.display = "inline-block";
+							confirmButton.addEventListener("tap", function() {
+								for (var i = 0; i < radioboxes.length; i++ ) {
+								     if (radioboxes[i].checked) {
+									    requency = radioboxes[i].value;
+									  }
+								}
+								messageDeatil.paymentAccept(affiliateId, requency, messageId);
+								contentWebview.evalJS('clearForm(' + currentId + ')');
+							})
+						}
+					})
+					
+					//拒绝
+					var rejectModal = document.getElementById("reject");
+					var apply = document.getElementById("apply");
+					var cancel = document.getElementById("cancel");
+					var rejectButton = document.getElementById("rejectButton");
+					var rejectReson = "";
+					rejectButton.addEventListener("tap", function() {
+						if (pubSysStorage.getData("period") != "") {
+							document.getElementById("textarea").value = pubSysStorage.getData("period");
+							rejectReson = document.getElementById("textarea").value;
+						} else {
+							rejectReson = document.getElementById("textarea").value;
+						}
+						rejectModal.style.display = "block";
+					})
+					apply.addEventListener("tap", function() {
+						rejectReson = document.getElementById("textarea").value;
+						if (rejectReson == "") {
+							document.getElementById("placeholder").style.visibility = "visible";
+							document.getElementById("textarea").style.borderColor = "#00ccc8";
+							document.getElementById("textarea").addEventListener("tap", function() {
+								document.getElementById("placeholder").style.visibility = "hidden";
+							})
+						} else {
+							document.getElementById("placeholder").style.visibility = "hidden";
+							document.getElementById("textarea").style.borderColor = "#dddddd";
+							messageDeatil.paymentReject(affiliateId, rejectReson, messageId);
+							rejectModal.style.display = "none";
+							document.getElementById("acceptButton").style.display = "none";
+							document.getElementById("rejectButton").style.display = "none";
+							contentWebview.evalJS('clearForm(' + currentId + ')');
+						}
+					})
+					cancel.addEventListener("tap", function() {
+						document.getElementById("textarea").style.borderColor = "#dddddd";
+						document.getElementById("placeholder").style.visibility = "hidden";
+						rejectModal.style.display = "none";
+						document.getElementById("textarea").value = "";
+					})
+				
+				}
+			}
+			if (data.data.length > 1) {
+				document.getElementById("offerOne").style.display = "none";
+			}
+		}
+		
+		mui.ready(function() {
+			mui.plusReady(function() {
+				mui.back = function(){
+					plus.webview.currentWebview().close();
+					plus.webview.getWebviewById("subpage/message-content.html").show();
+				};
+				var html1 = "";
+				var webview = plus.webview.currentWebview();
+				var dataLength = webview.length;
+				var unreadLength =  webview.unreadLength;
+				var contentWebview = plus.webview.getWebviewById('subpage/message-content.html');
+				currentId = webview.item;
+				
+				if (currentId == 0) {
+					document.getElementById("pre").style.color = "#cecece";
+				}else if (currentId == dataLength -1) {
+					document.getElementById("next").style.color = "#cecece";
+				}
+				if (dataLength == 1) {
+					document.getElementById("pre").style.color = "#cecece";
+					document.getElementById("next").style.color = "#cecece";
+				}
+				
+				if (messageType == "" || messageType.indexOf("all") > 0) {
+					document.getElementById("detailTitle").innerText = "Message All";
+				} else {
+					document.getElementById("detailTitle").innerText = messageType;
+					document.getElementById("detailTitle").style.textTransform = "capitalize";
+				}
+				
+				contentWebview.evalJS('getDetailData(' + currentId + ', "render")');
+				messageDeatil.checkPeriod();
+
+				
+				//pre
+				mui('body').on('tap', '#pre', function() {
+					--currentId;
+					if (currentId < 0) {
+						document.getElementById("pre").style.color = "#cecece";
+						currentId = 0;
+					} else if (currentId == 0) {
+						document.getElementById("pre").style.color = "#cecece";
+						contentWebview.evalJS('getDetailData(' + currentId + ', "render")');
+					} else {
+						contentWebview.evalJS('getDetailData(' + currentId + ', "render")');
+					}
+					if (currentId < dataLength - 1) {
+						document.getElementById("next").style.color = "#ff8023";
+					}
+				})
+				
+				//next
+				mui('body').on('tap', '#next', function() {
+					++currentId;
+					if (currentId > dataLength - 1) {
+						currentId = dataLength - 1;
+						document.getElementById("next").style.color = "#cecece";
+					} else if (currentId == dataLength - 1) {
+						document.getElementById("next").style.color = "#cecece";
+						contentWebview.evalJS('getDetailData(' + currentId + ', "render")');
+					} else {
+						contentWebview.evalJS('getDetailData(' + currentId + ', "render")');
+					}
+					if (currentId > 0) {
+						document.getElementById("pre").style.color = "#ff8023";
+					}
+				})
+				
+				//detail
+				mui("body").on("tap", "#msgDeatilPullLeft", function() {
+					messageDeatil.hideDeatail();
+					messageDeatil.showDataList();
+				})
+			}) 
+		}) 
+		
+</script>
+	</body>
+</html>

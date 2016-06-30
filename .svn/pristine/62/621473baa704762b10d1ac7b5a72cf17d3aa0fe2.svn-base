@@ -1,0 +1,75 @@
+var debugMode = true;
+var appUpdateCheckUrl = 'http://api.rtm.dy/data/static/update.json';
+var APIS = {
+	api: {
+		url :"http://api.rtm.dy/"
+	},
+	login: {
+		baseRrl : "http://api.rtm.dy/mobile/Account/login",
+		method : "GET"
+	},
+	logout: {
+		baseRrl : "http://api.rtm.dy/mobile/Account/logout",
+		method : "GET"
+	},
+	setting: {
+		baseRrl : "http://api.rtm.dy/mobile/Account/info",
+		method : "GET"
+	},
+	bind: {
+		baseRrl : "http://api.rtm.dy/mobile/Account/binding",
+		method : "GET"
+	},
+	message: {
+		baseRrl : "http://api.rtm.dy/mobile/Message/list",
+		method : "GET"
+	},
+	mark: {
+		baseRrl: "http://api.rtm.dy/mobile/Message/mark",
+		method : "GET"
+	},
+	data: {
+		baseRrl: "http://api.rtm.dy/mobile/Data/center",
+		method : "GET"
+	},
+	paymentAccept: {
+		baseRrl: "http://api.rtm.dy/mobile/Payment/prove",
+		method : "GET"
+	},
+	paymentReject: {
+		baseRrl: "http://api.rtm.dy/mobile/Payment/unprove",
+		method : "GET"
+	},
+	search:{
+		baseRrl: "http://api.rtm.dy/mobile/Offer/search",
+		method : "GET"
+	},
+	setStatus:{
+		baseRrl: "http://api.rtm.dy/mobile/Offer/setStatus",
+		method : "GET"
+	},
+	setCaps:{
+		baseRrl: "http://api.rtm.dy/mobile/Offer/EditCaps",
+		method : "GET"
+	},
+	offerCountAff:{
+		baseRrl: "http://api.rtm.dy/mobile/Offer/getoffercountaff",
+		method : "GET"
+	},
+	geoList:{
+		baseRrl: "http://api.rtm.dy/mobile/Offer/getGeoList",
+		method : "GET"
+	},
+	payout:{
+		baseRrl: "http://api.rtm.dy/mobile/Offer/settask",
+		method : "POST"
+	},
+	redirect:{
+		baseRrl: "http://api.rtm.dy/mobile/Offer/setRedirect",
+		method : "GET"
+	},
+	setGeo:{
+		baseRrl: "http://api.rtm.dy/mobile/offer/EditGeo",
+		method : "GET"
+	}
+}

@@ -1,0 +1,40 @@
+var debugMode = true;
+var appUpdateCheckUrl = 'http://api.yeahmobi.com/data/static/update.json';
+var APIS = {   
+	login: {
+		baseRrl : "http://api.yeahmobi.com/mobile/Account/login",
+		method : "GET"
+	},
+	logout: {
+		baseRrl : "http://api.yeahmobi.com/mobile/Account/logout",
+		method : "GET"
+	},
+	setting: {
+		baseRrl : "http://api.yeahmobi.com/mobile/Account/info",
+		method : "GET"
+	},
+	bind: {
+		baseRrl : "http://api.yeahmobi.com/mobile/Account/binding",
+		method : "GET"
+	},
+	message: {
+		baseRrl : "http://api.yeahmobi.com/mobile/Message/list",
+		method : "GET"
+	},
+	mark: {
+		baseRrl: "http://api.yeahmobi.com/mobile/Message/mark",
+		method : "GET"
+	},
+	data: {
+		baseRrl: "http://api.yeahmobi.com/mobile/Data/center",
+		method : "GET"
+	},
+	paymentAccept: {
+		baseRrl: "http://api.yeahmobi.com/mobile/Payment/prove",
+		method : "GET"
+	},
+	paymentReject: {
+		baseRrl: "http://api.yeahmobi.com/mobile/Payment/unprove",
+		method : "GET"
+	}
+}

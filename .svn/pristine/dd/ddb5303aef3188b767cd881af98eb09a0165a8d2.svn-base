@@ -1,0 +1,25 @@
+var itemValue = "";
+var item = "";
+var offerGeo = {
+	geoModal: function() {
+		//点击geo，弹出geo弹窗
+		mui("#offerGeoContent").on("tap", "#selectGeo", function() {
+			document.getElementById("geoBox").style.display = "block";
+			//geo弹窗点选事件
+			mui("#geoBox").on("tap", ".mui-table-view-cell", function() {
+				itemValue = this.getAttribute("data-value");
+				mui(".mui-table-view-cell").each(function() {
+					if(this.classList.contains('mui-active')) {
+						this.classList.remove('mui-active');
+					}
+				});
+				this.className = "mui-table-view-cell mui-active";
+				item  = '<li class="mui-table-view-cell">' + '<a href="#">' + '<span class="mui-pull-left offerChangeName">' + itemValue + '</span>'+  '<span class="mui-pull-right offerChangeValue">' + '<span class="mui-icon mui-icon-closeempty">' + '</span>' + '</span>' + '<div class="clearfix"></div>'+ '</a>' + '</li>';
+			})
+		})
+		document.getElementById("geoConfirm").addEventListener("tap", function() {
+			document.getElementById("geo").innerHTML = document.getElementById("geo").innerHTML + item;
+			document.getElementById("geoBox").style.display = "none";
+		})
+	}
+}

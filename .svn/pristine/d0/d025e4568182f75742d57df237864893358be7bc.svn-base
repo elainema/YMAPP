@@ -1,0 +1,7 @@
+var token = pubSysStorage.getData('token');
+var deviceId = pubSysStorage.getData('deviceId');
+var offerContent = {
+	goToEdit:function() {
+		
+	}
+}

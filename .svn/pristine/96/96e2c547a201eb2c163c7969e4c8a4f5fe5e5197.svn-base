@@ -1,0 +1,53 @@
+var app = {
+	initInterface: function() {
+		log("ini interface start");
+		mui.initGlobal({
+			optimize: true,
+			swipeBack: true
+		});
+		
+		var DPI = window.devicePixelRatio;
+		var DPI = 2;
+		//根据DPI设置显示图片大小
+		var imgs = document.getElementsByTagName("img");
+		if (imgs) {
+			for(i = 0; i < imgs.length; i++){
+				var width = imgs[i].width/DPI;
+				imgs[i].width = width;
+				imgs[i].style.display = "inline-block";
+			}
+		}
+		log("ini interface end");
+	},
+	
+	initEvent: function() {
+		log("ini event start");
+		//处理Andriond自带返回按键
+		mui.back = function(){
+			var keepLogin = pubSysStorage.getData("keepLogin");
+			plus.nativeUI.confirm("Are you sure to exit?", function(e){
+				if (e.index == 0) {
+					if (keepLogin == 0) {
+						unbindDevice();  //未勾选保持登录，调用logout接口,退出不接收推送
+					}
+					plus.runtime.quit();
+				}
+			}, "YeahMobiAPP", ["OK","Cancel"] );
+		};
+		
+		//添加timer事件
+		timerEvent.addEvent('getDeviceId', 500, getDeviceId);
+		log("ini event end");
+		
+		//添加reload事件
+		mui("body").on("tap", ".reload", reloadPage);
+	}
+};
+
+mui.ready(function() {
+	app.initInterface();
+	mui.plusReady(function() {
+		app.initEvent();
+	});
+});
+

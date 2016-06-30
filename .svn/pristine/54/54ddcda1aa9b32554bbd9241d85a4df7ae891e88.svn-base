@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Setting</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<link rel="stylesheet" href="../css/style.css">
+		<link rel="stylesheet" href="../css/country.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/art-template-min.js"></script>
+		<script src="../js/offer-detail.js"></script>
+		<style>
+			html,body {
+				background-color: #ffffff;
+				color:#ccc;
+				font-family: "Roboto-Light";
+				height: 100%;
+			}
+		</style>
+		<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: true  
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav offerHead">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+				<span class="detailTitle">Offer edit</span>
+			</a>
+  			<span class="mui-icon mui-icon-reload mui-pull-right reload"></span>
+		</header>
+		<div class="mui-content offerContent" id="offerDeatilContent">
+			<ul class="mui-table-view">
+			   <li class="mui-table-view-cell">
+				   	<div id="offerItem">
+				   	</div>
+			   </li>
+			</ul>
+			<ul class="mui-table-view" id="offerChanges">
+			 </ul>
+		</div>
+		<div id="capsDetail"></div>
+		
+		<script id="offerDeatil" type="text/html">
+		   <li class="mui-table-view-cell" data-name="status" data-value="<%=data[0].status%>">
+				<div class="mui-navigate-right">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Status</span>
+						<span class='mui-pull-right offerChangeValue'><%=data[0].status%></span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   	<li class="mui-table-view-cell"  id="payoutValue" data-name="payout" data-value="<%=data[0].payout_per_conversion%>">
+				<div class="mui-navigate-right">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Payout</span>
+						<span class="mui-pull-right offerChangeValue">$<%=data[0].payout_per_conversion%></span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   	<li class="mui-table-view-cell"  data-name="caps" data-value="<%=data[0].is_caps%>">
+				<div class="mui-navigate-right">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Caps</span>
+						<span class='mui-pull-right offerChangeValue'>
+							<%if(data[0].is_caps == 1){%>
+								Yes
+							<%}else{%>
+								No
+							<%}%>
+						</span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   	<li class="mui-table-view-cell"  data-name="redirect" data-value="<%=data[0].caps_redirect_offer_id%>">
+				<div class="mui-navigate-right">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Redirect</span>
+						<span class='mui-pull-right offerChangeValue'><%=data[0].caps_redirect_offer_id%></span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   <li class="mui-table-view-cell"  data-name="geo">
+				<div class="mui-navigate-right">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Geo</span>
+						<ul class="mui-pull-right detailCountry">
+							<%if(data[0].countrys.length <= 6){%>
+								<%for(var index = 0; index < data[0].countrys.length; index++) {%>
+									<li>
+										<p class="device-icon country-<%=data[0].countrys[index].code%>"></p>
+										<p class="countryName"><%=data[0].countrys[index].code%></p>
+									</li>
+								<%}%>
+							<%}else{%>
+								<%for(var index = 0; index < 6; index++) {%>
+									<li>
+										<p class="device-icon country-<%=data[0].countrys[index].code%>"></p>
+										<p class="countryName"><%=data[0].countrys[index].code%></p>
+									</li>
+								<%}%>
+							<%}%>
+						</ul>
+					</a>
+				</div>
+		  	</li>
+		  	<div id="geoList" style="display: none;">
+		  		<%for(var index = 0; index < data[0].countrys.length; index++) {%>
+		  		<li class="mui-table-view-cell" id="<%=data[0].countrys[index].id%>" data-value="<%=data[0].countrys[index].name%>">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName"><%=data[0].countrys[index].name%></span>
+						<span class='mui-pull-right offerChangeValue'>
+							<span class="mui-icon mui-icon-closeempty"></span>
+						</span>
+						<div class="clearfix"></div>
+					</a>
+			  	</li>
+			  	<%}%>
+		  	</div>
+		</script>
+		<script id="capsDeatil" type="text/html">
+			<li class="mui-table-view-cell">
+				<div class="caps">
+					<input type="number" class='mui-pull-right offerChangeValue capsDeatil' id="daily_conversions" value="<%=data[0].daily_conversions%>"  max="8">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Daily Convs:</span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   	<li class="mui-table-view-cell">
+				<div class="caps">
+					<input type="number" class="mui-pull-right offerChangeValue capsDeatil" id="monthly_conversions" value="<%=data[0].monthly_conversions%>"  max="8">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Monthly Convs:</span>
+						
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   	<li class="mui-table-view-cell" id="time">
+				<div class="caps">
+					<input type="number" class="mui-pull-right offerChangeValue capsDeatil" id="daily_payout" value="<%=data[0].daily_payout%>"  max="8">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Daily Payout:</span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   	<li class="mui-table-view-cell">
+				<div class="caps">
+					<input type="number" class="mui-pull-right offerChangeValue capsDeatil" id="monthly_payout" value="<%=data[0].monthly_payout%>"  max="8">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Monthly Payout:</span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   	<li class="mui-table-view-cell">
+				<div class="caps">
+					<input type="number" class='mui-pull-right offerChangeValue capsDeatil' id="daily_revenue" value="<%=data[0].daily_revenue%>"  max="8">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Daily Revenue:</span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   	<li class="mui-table-view-cell">
+				<div class="caps">
+					<input type="number" class='mui-pull-right offerChangeValue capsDeatil' id="monthly_revenue" value="<%=data[0].monthly_revenue%>"  max="8">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Monthly Revenue:</span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   	<li class="mui-table-view-cell">
+				<div class="mui-navigate-right">
+					<input type="number" class='mui-pull-right offerChangeValue capsDeatil' id="daily_alarm" value="<%=data[0].monthly_alarm%>"  max="8">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Daily Alarm:</span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		   	<li class="mui-table-view-cell">
+				<div class="mui-navigate-right">
+					<input type="number" class='mui-pull-right offerChangeValue capsDeatil' id="monthly_alarm" value="<%=data[0].daily_alarm%>"  max="8">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">Monthly Alarm:</span>
+						<div class="clearfix"></div>
+					</a>
+				</div>
+		  	</li>
+		</script>
+		<script>
+		var offerId = "";
+		var role = pubSysStorage.getData('role');
+		//刷新页面
+		document.addEventListener('loadAgain',function() {
+			showWaiting('Loading...');
+			offerDetail.load(offerId);
+		})
+		
+		mui.ready(function() {
+			mui.plusReady(function() {
+				var item = plus.webview.currentWebview().offerItem;
+				offerId = plus.webview.currentWebview().offerId;
+				document.getElementById("offerItem").innerHTML = item;
+				offerDetail.load(offerId);
+				
+				//点击offer change,跳转至对应页面
+				mui("#offerChanges").on("tap", ".mui-table-view-cell", function() {
+					var item = this.getAttribute("data-name");
+					var targetPage = "offer-" + "" + item + "" + ".html";
+					var capsDetail = "";
+					var existGeos = "";
+					var payout = "";
+					var redirect = "";
+					var ids = plus.webview.currentWebview().ids;
+					if (item == "geo") {
+						var value = document.getElementById("geoList").innerHTML;
+					} else {
+						var value = this.getAttribute("data-value");
+					}
+					if (role == "BD") {
+						if (plus.webview.getWebviewById(targetPage)) {
+							plus.webview.getWebviewById(targetPage).show();
+						} else {
+							if (targetPage == "offer-caps.html") {
+								capsDetail = document.getElementById("capsDetail").innerHTML;
+							}
+							if (targetPage == "offer-payout.html") {
+								payout = document.getElementById("payoutValue").getAttribute("data-value");
+							}
+							mui.openWindow({
+								id : targetPage,
+								url: targetPage,
+								preload: false,
+								waiting:{
+								  autoShow: false,//自动显示等待框，默认为true
+								  title:'Loading...'//等待对话框上显示的提示内容
+								},
+								extras:{
+									value: value,
+									ids: offerId,
+									capsDetail:capsDetail,
+									payout:payout
+								},
+							   	show:{
+							      autoShow:true,//页面loaded事件发生后自动显示，默认为true
+							   	}
+							});
+						}
+					} 
+				})
+					//添加reload事件
+					mui("body").on("tap", ".reload", reloadPage);
+					//隐藏滚动条
+					plus.webview.currentWebview().setStyle({scrollIndicator:'none'});
+			})
+		})
+		</script>
+	</body>
+</html>

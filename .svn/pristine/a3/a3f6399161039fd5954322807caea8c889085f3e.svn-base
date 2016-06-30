@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>   
+	<head>
+		<meta charset="utf-8">
+		<title>Login</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css">
+		<link rel="stylesheet" href="css/common.css">
+		<script src="js/mui.min.js"></script>
+		<script src="js/timerevent.js"></script>
+		<script src="js/config.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/app.js"></script>
+		<script src="js/login.js"></script>
+		<style>
+			html,body {
+				background-color: #35393f;
+				height: 100%;
+			}
+		</style>
+		<script>
+			//创建遮罩页面
+			mui.init({
+			  preloadPages:[{
+				id:"transparent.html",
+				url:"transparent.html",   
+				styles:{
+					top:'50px',
+					bottom:'0',
+					width: "100%",
+					zindex: 1,
+					opacity: 0.8,
+					popGesture:"none"
+				}      
+			  }]
+			});
+		</script>
+	</head>
+	<body>
+		<div id="login">
+			<h1 class="mui-text-center"><img width="304" src="images/logo.png"></h1>
+	        <form id="loginForm">
+	        	<div class="mui-input-row form-group">
+	            	<span class="icon"><img width="45" src="images/account.png"/></span>
+	                <input type="text" id="email" class="mui-input-clear" placeholder="Account" value="">
+	        	</div>
+	        	<div class="mui-input-row form-group">
+	            	<span class="icon"><img width="45" src="images/psd.png"/></span>
+	                <input type="password" id="password" class="mui-input-clear" placeholder="Password" value="">
+	           </div>
+	             <div class="mui-input-row mui-checkbox">
+	                <label for="keepLogin">Keep me logged in</label>
+	                <input name="checkbox" id="keepLogin" type="checkbox">
+	            </div>
+	            <div class="mui-input-row">
+	                <button type="button" id="commit" class="mui-btn mui-btn-positive mui-btn-block">Log In</button>
+	            </div>
+	        </form>
+		</div>
+		<script>
+		if(pubSysStorage.getData('unbindFlag')) {
+			timerEvent.addEvent('unbindDevice', 1000, function() {
+				log('running');
+				unbindDevice(function() {
+					pubSysStorage.saveData('unbindFlag', 0);
+					//pubSysStorage.saveData('token', '');
+					timerEvent.removeEvent('unbindDevice');
+				});
+			});
+		}
+		
+		
+		function refresh() {
+			login.resetForm();
+		}
+		
+		function bindLoginEvent() {
+			var commit = getElements("#commit", true);
+			commit.addEventListener('tap', login.doLogin);
+		}
+		
+		function gotoMessage() {
+			mui.openWindow({
+				id : "message",
+				url: "message.html",
+				preload: false,
+				waiting:{
+			      autoShow: false,//自动显示等待框，默认为true
+			      title:'Loading...'//等待对话框上显示的提示内容
+			   },
+			   show:{
+			      autoShow:true,//页面loaded事件发生后自动显示，默认为true
+			   },
+			});
+		}
+		
+		(function($) {
+			$.ready(function() {
+				$.plusReady(function() {
+					bindLoginEvent();
+					login.doAutoLogin(gotoMessage);
+				});
+			})
+		})(mui);
+		</script>
+	</body>
+</html>
+ 

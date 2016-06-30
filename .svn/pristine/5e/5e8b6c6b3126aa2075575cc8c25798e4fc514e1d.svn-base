@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>offerpayout</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/offer-payout.js"></script>
+		<!--<script src="../js/app.js"></script>-->
+		<style>
+			html,body {
+				background-color: #ffffff;
+				color:#ccc;
+				font-family: "Roboto-Light";
+				height: 100%;
+			}
+		</style>
+		<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: true  
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav offerHead">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+				<span class="detailTitle">Change offer payout</span>
+			</a>
+  			<span class="mui-icon mui-icon-reload mui-pull-right reload"></span>
+		</header>
+		<div class="mui-content offerContent" id="offerPayoutContent">
+			<p id="traffic">X affiliates have traffic on this offer</p>
+			<ul class="mui-table-view offerContent">
+			   	<li class="mui-table-view-cell" id="status">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Payout</span>
+							<input type="number" class='mui-pull-right offerChangeValue' id="statusValue" value="12345678"  max="8">
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			   	<li class="mui-table-view-cell" id="effectiveTime">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Effective Time</span>
+							<span class='mui-pull-right offerChangeValue' id="effTimeValue">Customized time</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			   	<li class="mui-table-view-cell" id="date">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Date</span>
+							<span class='mui-pull-right offerChangeValue' id="selectDate"></span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			   	<li class="mui-table-view-cell" id="time">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Time</span>
+							<span class='mui-pull-right offerChangeValue' id="selectTime"></span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			 </ul>
+			 <div class="mui-text-center">
+				<button type="button" class="mui-btn cancel" id="cancel">Cancel</button>
+				<button type="button" class="mui-btn confirm" id="confirm">Confirm</button>
+			 </div>
+		</div>
+		<div class="mui-backdrop" id="effectiveTimeBox">
+			<div class="mui-card">
+				<div class="formName  mui-text-center">Status</div>
+				<ul class="mui-table-view dataSearch">
+	  				<li class="mui-table-view-cell mui-active" data-value="now+">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Now
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="later+12">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>After 12 hours
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="later+24">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>After 24 hours
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="later+48">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>After 48 hours
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="custom">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Customized time
+	  					</a>
+	  				</li>
+	  			</ul>
+				<button type="button" class="mui-btn confirm" id="effTimeConfirm">Confirm</button>
+			</div>
+		</div>
+		
+		<script>
+		mui.ready(function() {
+			mui.plusReady(function() {
+				var wbv = plus.webview.all();
+				offerPayout.effectiveTime();
+				mui("#offerPayoutContent").on("tap", "#date" ,function() {
+					offerPayout.pickDate();
+				})
+				mui("#offerPayoutContent").on("tap", "#time" ,function() {
+					offerPayout.pickTime();
+				})
+				mui("#offerPayoutContent").on("tap", "#cancel", function() {
+					plus.webview.currentWebview().close();
+				})
+				
+				//调confirm接口
+				
+				plus.webview.currentWebview().setStyle({scrollIndicator:'none'}); //隐藏滚动条
+			})
+		})
+		</script>
+	</body>
+</html>

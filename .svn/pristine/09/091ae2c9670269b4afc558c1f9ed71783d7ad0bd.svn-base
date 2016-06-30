@@ -1,0 +1,21 @@
+var token = pubSysStorage.getData('token');
+var deviceId = pubSysStorage.getData('deviceId');
+var offerRedirect = {
+	confirm: function(id, caps_redirect_offer_id) {
+		var data = {
+			"access-token": token,
+			"device": deviceId,
+			"id":id,
+			"caps_redirect_offer_id":caps_redirect_offer_id
+		}
+		doAjaxRequest('redirect', data, function(response) {
+			if (response.flag == "success") {
+				showAlert("Saved successfully", function() {
+				}, "YeahMobiAPP", "OK");
+			} else {
+				showAlert(response.msg, function() {
+				}, "YeahMobiAPP", "OK");
+			}
+		})
+	}
+}

@@ -1,0 +1,211 @@
+var token = pubSysStorage.getData('token');
+var deviceId = pubSysStorage.getData('deviceId');
+var messageContent = {
+	tappedIds: [],
+	unreadMessageNum: 0,
+	minId: 0,
+	maxId: 0,
+	data: [],
+	dataRead : [],
+	dataUnRead : [],
+	init: function() {
+		mui.init({
+			swipeBack: false,
+			pullRefresh: {
+				container: '#refreshContainer',
+				down : {
+			      contentdown : "",   //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+			      contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+			      contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+			      callback : messageContent.pulldown  //必选，刷新函数
+			   },
+				up: {
+			      	contentdown: '',
+			      	contentover : "释放立即加载",    //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+			      	contentrefresh : "正在加载...",  //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+					callback: messageContent.pullup // pullupRefresh
+				},
+			   	styles:{
+			      top: "0px",//内容页面顶部位置,需根据实际页面布局计算，若使用标准mui导航，顶部默认为48px；
+				  bottom: "12%"
+			   	}
+			}
+		});
+	},
+	
+	pulldown: function() {
+		var self = this;
+		var init = (arguments.length == 1 && arguments[0] == true);
+		setTimeout(function() {
+			var type = pubSysStorage.getData('messageType');
+			last_id = messageContent.maxId;
+			var data = {
+				"access-token": token,
+				"device": deviceId,
+				"last_id": last_id,
+				"type" : type
+			};
+			messageContent.load(data, function() {
+				if(!init) {
+					//refresh completed 这行代码必须调用
+					mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+				}
+			}, function() {
+				if(!init) {
+					//refresh completed 这行代码必须调用
+					mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+				}
+			});
+			
+			if(!init) {
+				//refresh completed 这行代码必须调用
+				mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+			}
+		}, 500);
+	},
+	
+	pullup: function() {
+		var self = this;
+		setTimeout(function() {
+			var type = pubSysStorage.getData('messageType');
+			var data = {
+				"history": 1,
+				"access-token": token,
+				"device": deviceId,
+				"last_id": messageContent.minId,
+				"type" : type
+			}
+			
+			messageContent.load(data, function() {
+				mui('#refreshContainer').pullRefresh().endPullupToRefresh();
+			}, function() {
+				mui('#refreshContainer').pullRefresh().endPullupToRefresh();
+			});
+		}, 500);
+	},
+	
+	load: function(data/*, successCallback, errorCallback*/) {
+		var successCallback = typeof arguments[1] == 'function' ? arguments[1] : null;
+		var errorCallback = typeof arguments[2] == 'function' ? arguments[2] : null;
+		doAjaxRequest('message', data, function(result) {
+			closeWaiting();
+			if (result.flag == "success") {
+				//更改未读消息数量
+				messageContent.unreadMessageNum = result.data.total;
+				messageContent.changeUnreadNum(messageContent.unreadMessageNum);
+				if(successCallback) {
+					successCallback();
+				}
+				//没有已读未读 和 被点击的未读，不重新组合数据和渲染页面
+				if(result.data.unread.length == 0 && result.data.read.length == 0 && messageContent.tappedIds.length == 0) {
+					//没有此分类的message 给一个提示 here...
+					return;
+				}
+				
+				if((messageContent.minId == 0 || parseInt(messageContent.minId) > parseInt(result.data.min)) && result.data.min) {
+					messageContent.minId = result.data.min;
+				}
+				
+				if(parseInt(messageContent.maxId) < parseInt(result.data.max) && result.data.max) {
+					messageContent.maxId = result.data.max;
+				}
+				
+				//重新组合数据
+				if(result.data.unread.length > 0) {
+					var isPullDown = typeof data.history == "undefined";
+					if(isPullDown) {
+						messageContent.dataUnRead = result.data.unread.concat(messageContent.dataUnRead);
+					}
+					else {
+						messageContent.dataUnRead = messageContent.dataUnRead.concat(result.data.unread);
+					}
+				}
+				
+				
+				if(result.data.read.length > 0) {
+					messageContent.dataRead = messageContent.dataRead.concat(result.data.read);
+				}
+				
+				//将点击的未读从未读数据移除，添加到已读数据
+				if(messageContent.tappedIds.length) {
+					for(var i in messageContent.tappedIds) {
+						var id = messageContent.tappedIds[i];
+						for(var j in messageContent.dataUnRead) {
+							var item = messageContent.dataUnRead[j];
+							if(item.id == id) {
+								messageContent.dataRead.push(messageContent.dataUnRead[j]);
+								delete messageContent.dataUnRead[j];
+							}
+						}
+					}
+					
+					//去除空值
+					var tmpData = [];
+					for(var i = 0; i < messageContent.dataUnRead.length; i++) {  
+						if(messageContent.dataUnRead[i] != null) {
+							tmpData.push(messageContent.dataUnRead[i]);
+						}  
+					}
+					messageContent.dataUnRead = tmpData;
+					messageContent.tappedIds = [];
+				}
+				
+				//对已读数据排序
+				var dataReadLength = messageContent.dataRead.length;
+				for(var i = 0; i < dataReadLength; i++) {
+					for(var j = i + 1; j < dataReadLength; j++) {
+						if(messageContent.dataRead[i].timestamp <  messageContent.dataRead[j].timestamp) {
+							var tmp = messageContent.dataRead[i];
+							messageContent.dataRead[i] = messageContent.dataRead[j];
+							messageContent.dataRead[j] = tmp;
+						}
+					}
+				}
+				
+				var readHtml = template('readMessage', {data: messageContent.dataRead, unreadLength: messageContent.dataUnRead.length});
+				var unreadHtml = template('unreadMessage', {data: messageContent.dataUnRead});
+				document.getElementById("allList").innerHTML = unreadHtml + readHtml;
+				messageContent.data = messageContent.dataUnRead.concat(messageContent.dataRead);
+			}
+		}, errorCallback);
+	},
+	
+	doRead: function(obj) {
+		currentTapMessage = "<li class=\"" + obj.classList + "\">" + obj.innerHTML + "</li>";
+
+		var item = document.getElementById("unread" + obj.id);
+		var ids = obj.id;
+		var dTime = document.getElementById("date" + obj.id);
+		var classList = obj.classList;
+		var itemUnreads = document.getElementById("itemUnreads" + obj.id).innerText;
+		messageContent.unreadMessageNum = messageContent.unreadMessageNum - itemUnreads;
+		dTime.style.color = "#8f8f94";
+		item.src = "../images/grayCircle.png";
+		classList.remove("unread");
+		messageContent.changeUnreadNum(messageContent.unreadMessageNum);  //改变icon数量
+		log("ids:" + ids);
+		log("changeunreads:" + messageContent.unreadMessageNum);
+		var data = {
+			ids: ids,
+			'access-token': token,
+			device: deviceId,
+		};
+		doAjaxRequest('mark', data, function(markedResponse) {
+			if (markedResponse.flag != "success") {
+				showAlert('Login Timeout.Please login again.', function(){
+					closeWaiting();
+					logout();
+				}, "YeahMobiAPP", "OK" );
+			} else {
+				log("标记成功");
+			}
+		});
+		messageContent.tappedIds.push(obj.id);
+	},
+	
+	changeUnreadNum: function() {
+		pwv = plus.webview.getWebviewById("message");
+		log("change unread message num to:" + messageContent.unreadMessageNum);
+		pwv.evalJS("message.changeIcon(" + messageContent.unreadMessageNum + ")");
+	}
+}

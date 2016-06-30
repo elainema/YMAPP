@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>  
+	<head>
+		<meta charset="utf-8">
+		<title>Setting</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css">
+		<link rel="stylesheet" href="css/common.css">
+		<script src="js/mui.min.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/config.js"></script>
+		<style>
+			html,body {
+				background-color: #000;
+				height: 100%;
+				width:100%;
+			} 
+			.mui-bar-nav{
+				box-shadow: none;
+			}
+		</style>     
+		<script> 
+			mui.init();
+		</script>
+	</head>
+	<body>   
+		<header class="mui-bar mui-bar-nav">
+  			<div class="mui-backdrop" id="sortMessage">
+	  			<ul class="mui-table-view dataSearch">
+	  				<li class="mui-table-view-cell  mui-active" id="messageAll">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>
+	  						<span>Message All</span>
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" id="Profile">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>
+	  						<span>Profile</span>
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" id="Offer">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>
+	  						<span>Offer</span>
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" id="Invoice">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>
+	  						<span>Invoice</span>
+	  					</a>
+	  				</li>
+	  			</ul>
+  			</div> 
+		</header>
+	                  	
+	<script>
+		var index = null;//主页面
+		function closeMenu () {
+			//!index && (index = mui.currentWebview.opener());
+			index = plus.webview.getWebviewById("message");
+			mui.fire(index, "mask:close");
+		}
+		
+		//点击 message分类时改变父webview(message)的title
+		mui("#sortMessage").on("tap", "a", function() {
+			if (this.parentElement.className.indexOf("mui-active") > 0) {
+			} else {
+				mui(".mui-table-view-cell").each(function() {
+					if(this.classList.contains('mui-active')) {
+						this.classList.remove('mui-active');
+					}
+				});
+				this.parentElement.className = "mui-table-view-cell mui-active";
+				var title = this.innerText;
+				var title = this.innerText;
+				var parentPage = plus.webview.getWebviewById('message');
+				var detailPage = plus.webview.getWebviewById('subpage/message-content.html');
+				
+				//message 内容清空
+				mui.fire(detailPage, 'clearContent', {
+				});
+				
+				showWaiting("Loading...");
+				if (title.toLowerCase().replace(/[ ]/g,"").indexOf("all") > 0) {
+					type = "";
+					pubSysStorage.saveData("messageType", type);
+				} else {
+					pubSysStorage.saveData("messageType", title.toLowerCase().replace(/[ ]/g,""));
+				}
+				
+				//改变message页面显示的title
+				mui.fire(parentPage, 'changeTitle', {
+				    title: title
+				});
+			}
+		})
+		
+		window.addEventListener('tap', closeMenu);
+		
+		window.addEventListener('initActive',function(event) {
+			mui(".mui-table-view-cell").each(function() {
+				if(this.classList.contains('mui-active')) {
+					this.classList.remove('mui-active');
+				}
+			});
+			document.getElementById("messageAll").className = "mui-table-view-cell mui-active";
+		});
+	</script>
+</body>
+</html>

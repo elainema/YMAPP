@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>offerchangegeo</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<link rel="stylesheet" href="../css/style.css">
+		<link rel="stylesheet" href="../css/country.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/offer-geo.js"></script>
+		<script src="../js/art-template-min.js"></script>
+		<style>
+			html,body {
+				background-color: #ffffff;
+				color:#ccc;
+				font-family: "Roboto-Light";
+				height: 100%;
+			} 
+		</style>
+		<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: true  
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav offerHead">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+				<span class="detailTitle">Change Offer geo</span>
+			</a>
+		</header>
+		<div class="mui-content offerContent" id="offerGeoContent">
+			<ul class="mui-table-view">
+			   <li class="mui-table-view-cell" id="selectGeo">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Geo:</span>
+							<span class='mui-pull-right offerChangeValue'>All</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			   </li>
+			</ul>
+			<ul class="mui-table-view" id="geo">
+			 </ul>
+			 <div class="mui-text-center" id="buttons">
+				<button type="button" class="mui-btn cancel" id="cancel">Cancel</button>
+				<button type="button" class="mui-btn confirm" id="confirm">Confirm</button>
+			 </div>
+		</div>
+		
+		<div class="mui-backdrop" id="geoBox">
+			<div class="geoSe">
+				<div class="formName  mui-text-center">Geo</div>
+				<div class="mui-card">
+					<ul class="mui-table-view dataSearch" id="geoes">
+		  			</ul>
+				</div>
+				 <div class="mui-text-center" id="geoButton">
+					<button type="button" class="mui-btn confirm" id="geoConfirm">Confirm</button>
+				</div>
+			</div>
+		</div>
+		
+<script id="geoList" type="text/html">
+<li class="mui-table-view-cell" id="All" data-value="All">
+	<a href="#">
+		<span class="mui-icon mui-icon-checkmarkempty"></span>All
+	</a>
+</li>
+<%for(var index = 0; index < data.list.length; index++) {%>
+	<li class="mui-table-view-cell" id="<%=data.list[index].name%>" data-value="<%=data.list[index].name%>">
+		<a href="#">
+			<span class="mui-icon mui-icon-checkmarkempty"></span><%=data.list[index].name%>
+		</a>
+	</li>
+<%}%>
+</script>
+<script>
+var allGeos = document.getElementById('geoes').innerHTML;
+mui.ready(function() {
+	mui.plusReady(function() {
+		var value = plus.webview.currentWebview().value;
+		//var existGeos = plus.webview.currentWebview().existGeos;
+		document.getElementById('geo').innerHTML = value;
+		offerGeo.getGeoList(value.id);
+
+				
+				
+				
+		//点击，删除当前项
+		mui("#geo").on("tap", ".mui-table-view-cell", function() {
+			var removeItem = this.id;
+			var removeValue = this.getAttribute("data-value");
+			var addItem = "";
+			addItem = "<li class='mui-table-view-cell' id='" + removeItem + "' data-value='" + removeItem + "'>" + "<a href='#'>" + "<span class='mui-icon mui-icon-checkmarkempty'>" + "</span>" + removeValue + "</li>";
+			document.getElementById('geo').removeChild(document.getElementById('' + removeItem + ''));
+
+			if ("selectedAll" == removeItem) {
+				document.getElementById('geoes').innerHTML = allGeos;
+			} else {
+				document.getElementById('geoes').innerHTML = document.getElementById('geoes').innerHTML + addItem; 
+			}
+		})
+		
+		//取消
+		mui("#offerGeoContent").on("tap", "#cancel", function() {
+			plus.webview.currentWebview().close();
+		})
+		
+		//select geo
+		offerGeo.geoModal();
+		
+		//confirm接口
+		
+		
+		//隐藏滚动条
+		plus.webview.currentWebview().setStyle({scrollIndicator:'none'});
+	})
+})
+</script>
+	</body>
+</html>

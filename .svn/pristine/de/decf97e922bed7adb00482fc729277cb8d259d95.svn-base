@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>offercaps</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<link rel="stylesheet" href="../css/style.css">
+		<link rel="stylesheet" href="../css/country.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/offer-caps.js"></script>
+		<!--<script src="../js/app.js"></script>-->
+		<style>
+			html,body {
+				background-color: #ffffff;
+				color:#ccc;
+				font-family: "Roboto-Light";
+				height: 100%;
+			}
+		</style>
+		<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: true  
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav offerHead">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+				<span class="detailTitle">Change Offer Caps</span>
+			</a>
+		</header>
+		<div class="mui-content offerContent" id="offerCapsContent">
+			<p id="traffic"><span id="offerCountAff">X</span> affiliates have traffic on this offer</p>
+			<ul class="mui-table-view offerContent">
+				<li class="mui-table-view-cell">
+					<div>
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Caps</span>
+							<div class="mui-switch mui-pull-right"  id="isActive">
+								<div class="mui-switch-handle"></div>
+							</div>
+						</a>
+					</div>
+				</li>
+				<div id="caps">
+				</div>
+			 </ul>
+			 <div class="mui-text-center" id="buttons">
+				<button type="button" class="mui-btn cancel" id="cancel">Cancel</button>
+				<button type="button" class="mui-btn confirm" id="confirm">Confirm</button>
+			 </div>
+		</div>
+		
+		<script>
+		mui.ready(function() {
+			mui.plusReady(function() {
+				var isActive = plus.webview.currentWebview().value;
+				var ids = plus.webview.currentWebview().ids;
+				var capDetail = plus.webview.currentWebview().capsDetail;
+				var is_caps = 0;
+				var daily_conversions,monthly_conversions, daily_payout, monthly_payout, daily_revenue, monthly_revenue, daily_alarm, monthly_alarm;
+				offerCaps.offerCountAff(ids);
+				document.getElementById("caps").innerHTML = capDetail;
+				if (isActive == 1) {
+					value = true;
+					document.getElementById("isActive").className = "mui-switch mui-active mui-pull-right";
+				} else {
+					isActive = false;
+				}
+				offerCaps.isActive(isActive);
+				mui('.mui-content .mui-switch').each(function() {
+					this.addEventListener('toggle', function(event) {
+						isActive = this.classList.contains('mui-active') ? true : false;
+						offerCaps.isActive(isActive);
+					});
+				});
+				
+				//取消
+				mui("#offerCapsContent").on("tap", "#cancel", function() {
+					plus.webview.currentWebview().close();
+				})
+				//确认
+				mui("#offerCapsContent").on("tap", "#confirm", function() {
+					showWaiting("Loading...");
+					var tag = [];
+					daily_conversions = document.getElementById("daily_conversions").value;
+					monthly_conversions = document.getElementById("monthly_conversions").value;
+					daily_payout = document.getElementById("daily_payout").value;
+					monthly_payout = document.getElementById("monthly_payout").value;
+					daily_revenue = document.getElementById("daily_revenue").value;
+					monthly_revenue = document.getElementById("monthly_revenue").value;
+					daily_alarm = document.getElementById("daily_alarm").value;
+					monthly_alarm = document.getElementById("monthly_alarm").value;
+					mui("#caps .offerChangeValue").each(function() {
+						var thisValue = this.value;
+						var re = /^\+?\d+(\.\d{1,3})?$/g;
+						if (re.test(thisValue) || thisValue == "") {
+							tag.push(re.test(thisValue));
+						}
+					})
+					if (isActive) {
+						if (tag.length == 8) {
+							is_caps = 1;
+							closeWaiting();
+							offerCaps.confirm(is_caps, daily_conversions, monthly_conversions, daily_payout, monthly_payout, daily_revenue, monthly_revenue, daily_alarm, monthly_alarm, ids);
+						} else {
+							showAlert('Please check your Caps info', function(){
+							}, "YeahMobiAPP", "OK");
+							closeWaiting();
+						}
+					} else {
+						is_caps = 0;
+						offerCaps.confirm(is_caps, daily_conversions, monthly_conversions, daily_payout, monthly_payout, daily_revenue, monthly_revenue, daily_alarm, monthly_alarm, ids);
+					}
+				})
+				
+				mui(".capsDeatil").each(function() {
+					this.addEventListener("focus", function() {
+						this.style.borderColor = "#a6a6a6";
+					})
+					this.addEventListener("focusout", function() {
+						this.style.borderColor = "#fff";
+					})
+				})
+			})
+		})
+		</script>
+	</body>
+</html>

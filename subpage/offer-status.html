@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Setting</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/offer-status.js"></script>
+		<!--<script src="../js/app.js"></script>-->
+		<style>
+			html,body {
+				background-color: #ffffff;
+				color:#ccc;
+				font-family: "Roboto-Light";
+				height: 100%;
+			}
+		</style>
+		<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: true  
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav offerHead">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+				<span class="detailTitle">Change Offer Status</span>
+			</a>
+		</header>
+		<div class="mui-content offerContent" id="offerStatusContent">
+			<p id="traffic"><span id="offerCountAff">X</span> affiliates have traffic on this offer</p>
+			<ul class="mui-table-view offerContent">
+			   	<li class="mui-table-view-cell" id="status">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Status</span>
+							<span class='mui-pull-right offerChangeValue' id="statusValue">&nbsp;</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			   	<li class="mui-table-view-cell" id="effectiveTime">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Effective Time</span>
+							<span class='mui-pull-right offerChangeValue' id="effTimeValue" data-value="now">Now</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			   	<li class="mui-table-view-cell" id="date">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Date</span>
+							<span class='mui-pull-right offerChangeValue' id="selectDate">&nbsp;</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			   	<li class="mui-table-view-cell" id="time">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Time</span>
+							<span class='mui-pull-right offerChangeValue' id="selectTime">&nbsp;</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			 </ul>
+			 <div class="mui-text-center">
+				<button type="button" class="mui-btn cancel" id="cancel">Cancel</button>
+				<button type="button" class="mui-btn confirm" id="confirm">Confirm</button>
+			 </div>
+		</div>
+		<div class="mui-backdrop" id="statusBox">
+			<div class="mui-card">
+				<div class="formName  mui-text-center">Status</div>
+				<ul class="mui-table-view dataSearch">
+	  				<li class="mui-table-view-cell" data-value="Active">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Active
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="Pending">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Pending
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="Paused">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Paused
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="Deleted">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Deleted
+	  					</a>
+	  				</li>
+	  			</ul>
+				<button type="button" class="mui-btn confirm" id="statusConfirm">Confirm</button>
+			</div>
+		</div>
+		<div class="mui-backdrop" id="effectiveTimeBox">
+			<div class="mui-card">
+				<div class="formName  mui-text-center">Status</div>
+				<ul class="mui-table-view dataSearch">
+	  				<li class="mui-table-view-cell mui-active" data-value="now">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Now
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="later+12">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>After 12 hours
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="later+24">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>After 24 hours
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="later+48">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>After 48 hours
+	  					</a>
+	  				</li>
+	  				<li class="mui-table-view-cell" data-value="custom">
+	  					<a href="#">
+	  						<span class="mui-icon mui-icon-checkmarkempty"></span>Customized time
+	  					</a>
+	  				</li>
+	  			</ul>
+				<button type="button" class="mui-btn confirm" id="effTimeConfirm">Confirm</button>
+			</div>
+		</div>
+		
+		<script>
+		mui.ready(function() {
+			mui.plusReady(function() {
+				var status = "";
+				var effectiveTime = "";
+				var statusValue = document.getElementById("statusValue");
+				var effTimeValue = document.getElementById("effTimeValue");
+				var value = plus.webview.currentWebview().value;
+				var ids = plus.webview.currentWebview().ids;
+				//offerCountAff
+				offerStatus.offerCountAff(ids);
+				document.getElementById("statusValue").innerText = value;
+				//默认时间
+				mui("#statusBox .mui-table-view-cell").each(function() {
+					if(this.getAttribute("data-value").toLowerCase() == value) {
+						this.className = "mui-table-view-cell mui-active";
+					}
+				});
+				offerStatus.statusModal(); //status弹窗
+				offerStatus.effectiveTime(); //effectiveTime弹窗
+				
+				mui("#offerStatusContent").on("tap", "#date" ,function() {
+					offerStatus.pickDate();
+				})
+				mui("#offerStatusContent").on("tap", "#time" ,function() {
+					offerStatus.pickTime();
+				})
+				mui("#offerStatusContent").on("tap", "#cancel", function() {
+					plus.webview.currentWebview().close();
+				})
+			 
+				//调confirm接口
+				mui("#offerStatusContent").on("tap", "#confirm", function() {
+					showWaiting("Loading...");
+					var status = document.getElementById("statusValue").innerText.toLowerCase();
+					var run_time = document.getElementById("effTimeValue").getAttribute("data-value");
+					var method = "";
+					if (run_time == "now") { //立即生效
+						method = "now";
+						run_time = "";
+					} else if (run_time == "custom") { //自定义时间
+						run_time = document.getElementById("selectDate").innerText + " " + document.getElementById("selectTime").innerText;
+						method = "custom";
+					} else {  //延迟时间
+						var new_run_time = run_time.split("+");
+						run_time = new_run_time[1];
+						method = new_run_time[0];
+					}
+					offerStatus.confirm(ids, status, method, run_time);
+				})
+				
+				plus.webview.currentWebview().setStyle({scrollIndicator:'none'}); //隐藏滚动条
+			})
+		})
+		</script>
+	</body>
+</html>

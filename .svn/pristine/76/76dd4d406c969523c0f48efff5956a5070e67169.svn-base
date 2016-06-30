@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>offerchangegeo</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<link rel="stylesheet" href="../css/style.css">
+		<link rel="stylesheet" href="../css/country.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/offer-geo.js"></script>
+		<!--<script src="../js/app.js"></script>-->
+		<style>
+			html,body {
+				background-color: #ffffff;
+				color:#ccc;
+				font-family: "Roboto-Light";
+				height: 100%;
+			}
+		</style>
+		<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: true  
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav offerHead">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+				<span class="detailTitle">Change Offer geo</span>
+			</a>
+		</header>
+		<div class="mui-content offerContent" id="offerGeoContent">
+			<ul class="mui-table-view">
+			   <li class="mui-table-view-cell" id="selectGeo">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Geo:</span>
+							<span class='mui-pull-right offerChangeValue'>All</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			   </li>
+			</ul>
+			<ul class="mui-table-view" id="geo">
+			   <li class="mui-table-view-cell" id="test1">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">MY-Malaysia1</span>
+						<span class='mui-pull-right offerChangeValue'>
+							<span class="mui-icon mui-icon-closeempty"></span>
+						</span>
+						<div class="clearfix"></div>
+					</a>
+			  	</li>
+			   <li class="mui-table-view-cell" id="test1">
+					<a href="#">
+						<span class="mui-pull-left offerChangeName">MY-Malaysia2</span>
+						<span class="mui-pull-right offerChangeValue">
+							<span class="mui-icon mui-icon-closeempty"></span>
+						</span>
+						<div class="clearfix"></div>
+					</a>
+			  	</li>
+			 </ul>
+			 <div class="mui-text-center" id="buttons">
+				<button type="button" class="mui-btn cancel" id="cancel">Cancel</button>
+				<button type="button" class="mui-btn confirm" id="confirm">Confirm</button>
+			 </div>
+		</div>
+		
+		<div class="mui-backdrop" id="geoBox">
+			<div class="geoSe">
+				<div class="formName  mui-text-center">Geo</div>
+				<div class="mui-card">
+					<ul class="mui-table-view dataSearch" id="geoes">
+		  				<li class="mui-table-view-cell mui-active" data-value="All">
+		  					<a href="#">
+		  						<span class="mui-icon mui-icon-checkmarkempty"></span>all
+		  					</a>
+		  				</li>
+		  				<li class="mui-table-view-cell" data-value="test1">
+		  					<a href="#">
+		  						<span class="mui-icon mui-icon-checkmarkempty"></span>test1
+		  					</a>
+		  				</li>
+		  				<li class="mui-table-view-cell" data-value="test2">
+		  					<a href="#">
+		  						<span class="mui-icon mui-icon-checkmarkempty"></span>test2
+		  					</a>
+		  				</li>
+		  				<li class="mui-table-view-cell" data-value="test3">
+		  					<a href="#">
+		  						<span class="mui-icon mui-icon-checkmarkempty"></span>test3
+		  					</a>
+		  				</li>
+		  				<li class="mui-table-view-cell" data-value="test4">
+		  					<a href="#">
+		  						<span class="mui-icon mui-icon-checkmarkempty"></span>test4
+		  					</a>
+		  				</li>
+		  				<li class="mui-table-view-cell" data-value="test5">
+		  					<a href="#">
+		  						<span class="mui-icon mui-icon-checkmarkempty"></span>test5
+		  					</a>
+		  				</li>
+		  				<li class="mui-table-view-cell" data-value="test6">
+		  					<a href="#">
+		  						<span class="mui-icon mui-icon-checkmarkempty"></span>test6
+		  					</a>
+		  				</li>
+		  				<li class="mui-table-view-cell" data-value="test7">
+		  					<a href="#">
+		  						<span class="mui-icon mui-icon-checkmarkempty"></span>test7
+		  					</a>
+		  				</li>
+		  			</ul>
+				</div>
+				 <div class="mui-text-center" id="geoButton">
+					<button type="button" class="mui-btn confirm" id="geoConfirm">Confirm</button>
+				</div>
+			</div>
+		</div>
+		<script>
+		var geoBox = "";
+		mui.ready(function() {
+			mui.plusReady(function() {
+				//删除当前项
+				mui("#geo").on("tap", ".mui-table-view-cell", function() {
+					//this.remove();
+					var removeItem = this.id;
+					document.getElementById('geo').removeChild(document.getElementById('' + removeItem + ''));
+				})
+				
+				//select geo
+				offerGeo.geoModal();
+				
+				//confirm接口
+				
+				plus.webview.currentWebview().setStyle({scrollIndicator:'none'}); //隐藏滚动条
+			})
+		})
+		</script>
+	</body>
+</html>

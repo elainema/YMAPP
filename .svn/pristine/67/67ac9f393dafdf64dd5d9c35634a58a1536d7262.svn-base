@@ -1,0 +1,68 @@
+var token = pubSysStorage.getData('token');
+var deviceId = pubSysStorage.getData('deviceId');
+var offerCaps = {
+	isActive: function(isActive) {
+		if (isActive) {
+			document.getElementById("caps").style.display = "block";
+			document.getElementById("buttons").style.display = "block";
+		} else {
+			document.getElementById("caps").style.display = "none";
+			document.getElementById("buttons").style.display = "none";
+		}
+	},
+	offerCountAff: function(ids) {
+		var data = {
+			"access-token": token,
+			"device": deviceId,
+			"ids": ids
+		}
+		doAjaxRequest('offerCountAff', data, function(response) {
+			if (response.flag == "success") {
+				if (response.data.aff_count > 0) {
+					document.getElementById("offerCountAff").innerText = response.data.aff_count;
+					document.getElementById("traffic").style.display = "block";
+				}
+			}
+		})
+	},
+	offerCountAff: function(ids) {
+		var data = {
+			"access-token": token,
+			"device": deviceId,
+			"ids": ids
+		}
+		doAjaxRequest('offerCountAff', data, function(response) {
+			if (response.flag == "success") {
+				if (response.data.aff_count > 0) {
+					document.getElementById("offerCountAff").innerText = response.data.aff_count;
+					document.getElementById("traffic").style.display = "block";
+				}
+			}
+		})
+	},
+	confirm:function() {
+		var data = {
+			"access-token": token,
+			"device": deviceId,
+			"is_caps": arguments[0],
+			"daily_conversions": arguments[1],
+			"monthly_conversions":arguments[2],
+			"daily_payout":arguments[3],
+			"monthly_payout":arguments[4],
+			"daily_revenue": arguments[5],
+			"monthly_revenue": arguments[6],
+			"daily_alarm": arguments[7],
+			"monthly_alarm": arguments[8],
+			"id": arguments[9]
+		}
+		doAjaxRequest('setCaps', data, function(response) {
+			if (response.flag == "success") {
+				var webview = plus.webview.getWebviewById("offer-detail.html");
+				closeWaiting();
+				webview.reload(true);
+				showAlert("Saved successfully", function() {
+				}, "YeahMobiAPP", "OK");
+			}
+		})
+	}
+}

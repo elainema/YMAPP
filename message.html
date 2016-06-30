@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html> 
+	<head>
+		<meta charset="utf-8">
+		<title>Setting</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css">
+		<link rel="stylesheet" href="css/common.css">
+		<link rel="stylesheet" href="css/style.css">
+		<script src="js/mui.min.js"></script>
+		<script src="js/timerevent.js"></script> 
+		<script src="js/config.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/app.js"></script>
+		<script src="js/message.js"></script>
+		<style> 
+			html,body {
+				background-color: #ededed;
+				color:#d2d2d2;
+			}
+		</style> 
+		<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: true  
+			}
+		});
+		</script>
+	</head> 
+	<body>
+		<header class="mui-bar mui-bar-nav" id="messageHeader">
+			<h1 class="mui-title title"><span id="title">Message All</span><span id="trigle" class="downtrigle"></span></h1>
+			<span class="mui-icon mui-icon-reload mui-pull-right reload" id="reload"></span>
+		</header>
+		<div id="mainContent" >
+		</div>
+		<nav class="mui-bar mui-bar-tab"  id="nav">
+			<a class="mui-tab-item mui-text-center" href="subpage/offer-content.html">
+				<p class="icon-offers"></p>
+				<span class="mui-tab-label">Offers</span>
+			</a>
+			<a class="mui-tab-item mui-text-center mui-active" href="subpage/message-content.html" id="message-tab">
+				<p class="icon-message"></p>
+				<span id="unread" class="mui-badge"></span>
+				<span class="mui-tab-label">Message</span>
+			</a>
+			<a class="mui-tab-item mui-text-center" href="subpage/data-content.html">
+				<p class="icon-data"></p>
+				<span class="mui-tab-label">Data</span>
+			</a>          
+			<a class="mui-tab-item mui-text-center" href="subpage/setting-content.html">
+				<p class="icon-setting"></p>
+				<span class="mui-tab-label">Setting</span>
+			</a>
+		</nav>
+	        	
+	<script>
+	function plusReady () {
+		mui.plusReady(function() {
+			closeWaiting();
+			var maskPage = plus.webview.getWebviewById("transparent.html");
+			if (maskPage) {
+				mui.fire(maskPage, 'initActive', {});
+			} else {
+				//如果遮罩webview尚未创建，则创建并初始化遮罩页面
+				mui.init({
+				  preloadPages:[{
+					id:"transparent.html",
+					url:"transparent.html",   
+					styles:{
+						top:'50px',
+						bottom:'0',
+						width: "100%",
+						zindex: 1,
+						opacity: 0.8,
+						popGesture:"none"
+					}      
+				  }]
+				});
+				mui.fire(maskPage, 'initActive', {});
+			}
+			
+			timerEvent.addEvent('multilogin', 10000, multiLoginCheck);
+			
+			// 添加监听从消息中心启动事件
+			plus.push.addEventListener("click", message.pushMessageClickListener, false ); 
+			    
+			//创建子页面，首个选项卡页面显示，其它均隐藏；  
+			message.buildSubPages();
+			mui("#messageHeader").on('tap', "h1", function() {
+				var currentWebView = plus.webview.getWebviewById("subpage/message-content.html");
+				if (currentWebView.isVisible()) {
+					if (showMenu) {
+						message.closeMenu();
+					} else {
+						message.openMenu();
+					}
+				}
+			})
+		});
+	}
+	
+	window.addEventListener("mask:close", message.closeMenu);
+			    
+	//添加筛选 点击事件监听
+	window.addEventListener('changeTitle',function(event) {
+	 	var title = event.detail.title;
+		getElements("#title", true).innerText = title;
+		message.refreshMessageContent();
+	});
+	
+	if (window.plus) {
+		plusReady();
+	} else {
+		document.addEventListener('plusready', plusReady, false);
+	}
+	</script>
+</body>
+</html>

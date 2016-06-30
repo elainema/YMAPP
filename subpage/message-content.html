@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Setting</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/art-template-min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/message-content.js"></script>
+		<style>
+			html,body {
+				background-color: #ededed;
+				color:#d2d2d2;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="refreshContainer" class="mui-scroll-wrapper mui-content">
+			<div class="mui-scroll" id="messageContainer">
+				<ul class="mui-table-view mui-table-view-chevron" id="allList">
+				</ul>
+			</div>
+		</div>
+		
+<script id="readMessage" type="text/html">
+<%for(var index = 0; index < data.length; index++) {%>
+	<% idx = index + unreadLength %>
+	<li class="mui-table-view-cell" id="<%=data[index].id%>" idx="<%=idx%>">
+        <div class="mui-navigate-right">
+			<div class="newMessageIcon"><img width="14" src="../images/grayCircle.png"></div>
+			<div class="area">
+				<p class="date" id="date"><%=data[index].create_time%><p>
+				<p class="megTitle" id="megTitle"><%=data[index].name%></p>
+				<p class="description" id="description"><%=data[index].description%></p>
+				<%if (data[index].data.length > 1) {%>
+					<p class="dataiOffer"><span id="dataiOffer0"><%=data[index].data[0].id%> - <%=data[index].data[0].name%> - <%=data[index].data[0].detail%></span><span class="yellow" >...</span></p>
+					<div id="collpse<%=data[index].id%>" class="collpse">
+						<%for(var item = 1; item < data[index].data.length; item++) {%>
+							<p id="dataiOffer0<%=item%></p>" class="dataiOffer"><%=data[index].data[item].id%> - <%=data[index].data[item].name%> - <%=data[index].data[item].detail%></p>
+						<%}%>
+					</div>
+				<%}else{%>
+					<p id="dataiOffer0" class="dataiOffer"><%=data[index].data[0].id%> - <%=data[index].data[0].name%> - <%=data[index].data[0].detail%></p>
+				<%}%>
+			</div>
+        </div>
+	</li>
+<%}%>
+</script>
+
+<script id="unreadMessage" type="text/html">
+<%for(var index = 0; index < data.length; index++) {%>
+    <li class="mui-table-view-cell unread" id="<%=data[index].id%>" idx="<%=index%>">
+    	<div class="mui-navigate-right">
+	        <div class="newMessageIcon"><img width="14"  id="unread<%=data[index].id%>" src="../images/yellowcircle.png"></div>
+	        <div class="area">
+	            <p id="date<%=data[index].id%>" class="newDate"><%=data[index].create_time%></p>
+	            <p class="megTitle"><%=data[index].name%></p>
+	            <p class="description"><%=data[index].description%></p>
+				<%if (data[index].data.length > 1) {%>
+					<p class="dataiOffer"><%=data[index].data[0].id%> - <%=data[index].data[0].name%> - <%=data[index].data[0].detail%><span class="yellow">...</span></p>
+					<div id="collpse<%=data[index].id%>" class="collpse">
+						<%for(var item = 1; item < data[index].data.length; item++) {%>
+							<p class="dataiOffer"><%=data[index].data[item].id%> - <%=data[index].data[item].name%> - <%=data[index].data[item].detail%></p>
+						<%}%>
+					</div>
+				<%}else{%>
+					<p class="dataiOffer"><%=data[index].data[0].id%> - <%=data[index].data[0].name%> - <%=data[index].data[0].detail%></p>
+				<%}%>
+				<span id="itemUnreads<%=data[index].id%>" style="display: none;"><%=data[index].data.length%></span>
+				<span id="ids<%=data[index].id%>" style="display: none;"><%=data[index].id%></span>
+			</div>
+		</div>
+	</li>
+<%}%>
+</script>
+
+	<script>
+		var detailPage = null;
+		var unreadMessageNum;
+		function gotoDetail(id, length, unreadLength) {
+		  	var webview = mui.openWindow({
+		    	id:'message-detail.html',
+		    	url : "../subpage/message-detail.html",
+		    	extras:{
+		    		item: id,
+		    		length: length,
+		    		unreadLength: unreadLength
+		    	},
+		    	styles:{
+			      	top: "0",       //新页面顶部位置
+			     	 bottom : "0"  //新页面顶部位置
+				 }
+		  	});
+		}
+		
+		//清空message list
+		function clearForm(id) {
+			messageContent.data[id].data[0].form = null;
+		}
+		
+		//取得点击的数据（上一条、下一条），如果是未读数据，标记为已读
+		function getDetailData(i, callback) {
+			var unreadNum = messageContent.unreadMessageNum;
+			var detailWebview = plus.webview.getWebviewById('message-detail.html');
+			var messageId = messageContent.data[i].id;
+			detailWebview.evalJS(callback + '(' + JSON.stringify(messageContent.data[i]) + ')');
+			if (messageId) {
+				var thisItem = document.getElementById(messageId);
+				if (thisItem.className.indexOf("unread") > 0) {
+				  	var itemUnreadsLength = document.getElementById("itemUnreads" + messageId).innerText;
+				  	var unreadMessageNum = unreadNum - itemUnreadsLength;
+				  	messageContent.unreadMessageNum = unreadMessageNum;
+				  	document.getElementById("date" + messageId).style.color = "#8f8f94";
+				  	document.getElementById("unread" + messageId).src = "../images/grayCircle.png";
+				  	thisItem.classList.remove("unread");
+				  	var ids = messageId;
+				  	var token = pubSysStorage.getData('token');
+					var deviceId = pubSysStorage.getData('deviceId');
+					var data = {
+						ids: ids,
+						'access-token': token,
+						device: deviceId,
+					};
+					doAjaxRequest('mark', data, function(markedResponse) {
+						if (markedResponse.flag != "success") {
+							showAlert('Login Timeout.Please login again.', function(){
+								closeWaiting();
+								logout();
+							}, "YeahMobiAPP", "OK" );
+						} else {
+							messageContent.changeUnreadNum(messageContent.unreadMessageNum);  //改变icon数量
+						}
+					});
+					messageContent.tappedIds.push(messageId);
+				}
+			}
+		}
+		
+		mui.ready(function() {
+			messageContent.init();
+			mui.plusReady(function() {
+			
+				mui('#messageContainer').on('tap', 'li', function(){
+					unreadMessageNum = messageContent.unreadMessageNum;
+					var id = this.getAttribute('idx');
+					var length = messageContent.data.length;
+					var classList = this.className;
+					if (classList.indexOf("unread") > 0) {
+						messageContent.doRead(this);
+					}
+					gotoDetail(id, length, unreadMessageNum);
+				});
+				showWaiting("Loading...");
+				pubSysStorage.saveData('messageType', '');
+				messageContent.pulldown(true);
+			})
+		});
+		
+		//下拉选择message分类，清空内容maxId 、 minId、组合的mesaage数据
+		window.addEventListener('clearContent',function(event) {
+			document.getElementById("allList").innerHTML = "";
+			messageContent.minId = 0;
+			messageContent.maxId = 0;
+			messageContent.dataUnRead = [];
+			messageContent.dataRead = [];
+			messageContent.data = [];
+		});
+	
+		//添加push 点击事件监听
+		document.addEventListener('loadAgain',function(event){
+			showWaiting("Loading...");
+			messageContent.pulldown(true);
+		});
+	</script>
+</body>
+</html>

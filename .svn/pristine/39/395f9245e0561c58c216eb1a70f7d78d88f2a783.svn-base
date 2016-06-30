@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Setting</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/my.js"></script>
+		<style>
+			html,body {
+				background-color: #ededed;
+				color:#ccc;
+				font-family: "Roboto-Light";
+			}
+		</style>
+	</head>
+	<body>
+		<div class="mui-content mui-text-center"  style="background-color: #ededed">
+			<p class="unopened">The website is being constructed<br />please glance over our website.</p>
+		</div>
+	</body>
+</html>

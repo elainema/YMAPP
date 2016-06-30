@@ -1,0 +1,75 @@
+var debugMode = true;
+var appUpdateCheckUrl = 'http://api.pre.dy/data/static/update.json';
+var APIS = {
+	api: {
+		url :"http://api.pre.dy/"
+	},
+	login: {
+		baseRrl : "http://api.pre.dy/mobile/Account/login",
+		method : "GET"
+	},
+	logout: {
+		baseRrl : "http://api.pre.dy/mobile/Account/logout",
+		method : "GET"
+	},
+	setting: {
+		baseRrl : "http://api.pre.dy/mobile/Account/info",
+		method : "GET"
+	},
+	bind: {
+		baseRrl : "http://api.pre.dy/mobile/Account/binding",
+		method : "GET"
+	},
+	message: {
+		baseRrl : "http://api.pre.dy/mobile/Message/list",
+		method : "GET"
+	},
+	mark: {
+		baseRrl: "http://api.pre.dy/mobile/Message/mark",
+		method : "GET"
+	},
+	data: {
+		baseRrl: "http://api.pre.dy/mobile/Data/center",
+		method : "GET"
+	},
+	paymentAccept: {
+		baseRrl: "http://api.pre.dy/mobile/Payment/prove",
+		method : "GET"
+	},
+	paymentReject: {
+		baseRrl: "http://api.pre.dy/mobile/Payment/unprove",
+		method : "GET"
+	},
+	search:{
+		baseRrl: "http://api.pre.dy/mobile/Offer/search",
+		method : "GET"
+	},
+	setStatus:{
+		baseRrl: "http://api.pre.dy/mobile/Offer/setStatus",
+		method : "GET"
+	},
+	setCaps:{
+		baseRrl: "http://api.pre.dy/mobile/Offer/EditCaps",
+		method : "GET"
+	},
+	offerCountAff:{
+		baseRrl: "http://api.pre.dy/mobile/Offer/getoffercountaff",
+		method : "GET"
+	},
+	geoList:{
+		baseRrl: "http://api.pre.dy/mobile/Offer/getGeoList",
+		method : "GET"
+	},
+	payout:{
+		baseRrl: "http://api.pre.dy/mobile/Offer/settask",
+		method : "POST"
+	},
+	redirect:{
+		baseRrl: "http://api.pre.dy/mobile/Offer/setRedirect",
+		method : "GET"
+	},
+	setGeo:{
+		baseRrl: "http://api.pre.dy/mobile/offer/EditGeo",
+		method : "GET"
+	}
+}

@@ -1,0 +1,21 @@
+var timerEvent = {
+	timers: {},
+	addEvent: function(name, interval, callback) {
+		if(typeof timerEvent.timers[name] == 'undefined') {
+			log('timer event ' + name + ' running!');
+			timerEvent.timers[name] = setInterval(function() {callback();}, interval);
+		}
+	},
+	removeEvent: function(name) {
+		if(typeof timerEvent.timers[name] !== 'undefined') {
+			clearInterval(timerEvent.timers[name]);
+			delete timerEvent.timers[name];
+			return;
+		}
+		log('timer event ' + name + 'not exists!');
+	},
+	
+	hasEvent: function(name) {
+		return typeof timerEvent.timers[name] !== 'undefined';
+	}
+}

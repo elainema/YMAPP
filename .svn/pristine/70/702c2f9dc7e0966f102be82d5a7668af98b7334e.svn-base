@@ -1,0 +1,321 @@
+function log(msg/*, fatal*/) {
+	if(debugMode) {
+		if(typeof msg == 'object') {
+			msg = JSON.stringify(msg);
+		}
+		if(arguments.length == 2 && arguments[1] == true) {
+			alert(msg);
+		}
+		else {
+			console.log(msg);
+		}
+	}
+}
+
+function getElements(selector/*, returnFirst, context*/) {
+	if(arguments.length < 3) {
+		var elements = mui(selector);
+		if(arguments[1] == true) {
+			return elements[0];
+		}
+	}
+	else {
+		var elements = mui(selector, arguments[2]);
+	}
+	return elements;
+}
+
+/**
+ * type: "timeout", "error", "abort", "parsererror"
+ */
+function globalErrorHandle(context, xhr, type, error, callback, api) {
+	log("http request error type:" + type);
+	if (api == 'logout') {
+		pubSysStorage.saveData('unbindFlag', 1);
+		log('request unbind interface fail, ignore backgroud process!');
+	} else if (api == 'login') {
+		showAlert('System error.Please try later.', function(){
+			if(callback) {
+				callback();
+			}
+		}, "YeahMobiAPP", "OK");
+	} else {
+		console.log("request interface fail, ignore backgroud process!");
+	}
+	closeWaiting();
+}
+
+function doAjaxRequest(api, data, successCallback/*, errorCallback, dataType*/) {
+	if(typeof APIS[api] !== 'object') {
+		log("api not defined", true);
+		return false;
+	}
+	var config = APIS[api];
+	var errorCallback = null;
+	if(arguments.length == 6) {
+		errorCallback = arguments[5];
+	}
+	
+	var dataType = 'json';
+	if(arguments.length == 5) {
+		dataType = arguments[4];
+	}
+	
+	if (plus.networkinfo.getCurrentType() == 1) {
+		if(api == 'bind') {
+			log('request binding interface fail, ignore backgroud process!');
+		} else if (api == 'logout') {
+			pubSysStorage.saveData('unbindFlag', 1);
+			log('request unbind interface fail, ignore backgroud process!');
+		} else {
+			showAlert('Network error!Please check your device.', function(){
+				if(errorCallback) {
+					errorCallback();
+				}
+				closeWaiting();
+			}, "YeahMobiAPP", "OK");
+		}
+		return false;
+	}
+	
+	log('http request start.');
+	log('request url:' + config['baseRrl']);
+	log('request method:' + config['method']);
+	log('request data type:' + dataType);
+	log('request data:');
+	log(data);
+	var ajaxOptions = {
+		url: config['baseRrl'],
+		type: config['method'],
+		dataType: dataType,
+		data: data,
+		success: function(text) {
+			log('http request success.');
+			log('http response data:');
+			log(text);
+			//多处登录错误统一处理
+			if(!multiLoginErrorHandle(text)) {
+				//其他异常统一处理
+				if(text.flag == 'fail' && text.msg == 'system error') {
+					globalErrorHandle({}, {}, text.data.detail_msg, '', null, api);
+					return;
+				}
+				if(api != 'login' && api != 'logout') {
+					pubSysStorage.saveData('isBinding', 1);
+				}
+				if(successCallback) {
+					successCallback(text);
+				}
+			}
+		},
+		complete: function() {
+			log('http request end.');
+		}
+	};
+	
+	ajaxOptions.error = function(context, xhr, type, error) {
+		globalErrorHandle(context, xhr, type, error, errorCallback, api);
+	}
+	mui.ajax(ajaxOptions);
+	return true;
+}
+
+function showWaiting(msg) {
+	plus.nativeUI.showWaiting(msg);
+}
+
+function closeWaiting() {
+	plus.nativeUI.closeWaiting();
+}
+
+function showAlert(message, alertCB, title, buttonCapture) {
+	plus.nativeUI.alert(message, alertCB, title, buttonCapture);
+}
+
+var pubSysStorage = {
+	saveData: function(name/*, value*/) {
+		var pairs = {};
+		if(arguments.length == 2) {
+			pairs[name] = arguments[1];
+		}
+		
+		if(typeof name == 'object') {
+			pairs = name;
+		}
+		
+		for(var key in pairs){
+			log('save ' + key + ':' + pairs[key] + ' to storage');
+			localStorage.setItem(key, pairs[key]);
+		}
+	},
+	getData: function(name) {
+		log('get ' + name + ' from storage');
+		return localStorage.getItem(name);
+	}
+};
+
+//共用函数
+function getDeviceId() {
+	var deviceId = pubSysStorage.getData("deviceId");
+	if(!deviceId) {
+		deviceId = plus.push.getClientInfo().clientid;
+		console.log(JSON.stringify(plus.push.getClientInfo()));
+	}
+	
+	if(!deviceId) {
+		return '';
+	}
+	pubSysStorage.saveData("deviceId", deviceId);
+	if(timerEvent.hasEvent('getDeviceId')) {
+		timerEvent.removeEvent('getDeviceId');
+	}
+	
+	if(!pubSysStorage.getData('isBinding')) {
+		var token = pubSysStorage.getData("token");
+		if(token) {
+			binding(token, deviceId);
+		}
+	}
+	return deviceId;
+}
+
+function binding(token, deviceId) {
+	var data = {
+		'access-token': token,
+		'device': deviceId
+	};
+	doAjaxRequest('bind', data);
+}
+
+//解除绑定
+function unbindDevice(callback) {
+	var	token = pubSysStorage.getData("token");
+	var deviceId = pubSysStorage.getData("deviceId");
+	var data = {
+		'access-token': token,
+		'device': deviceId
+	};
+	doAjaxRequest('logout', data, function(unbindDeviceRes) {
+		pubSysStorage.saveData("keepLogin", "");
+		pubSysStorage.saveData("token", "");
+		pubSysStorage.saveData("messageType", "");
+		pubSysStorage.saveData('isBinding', "");
+		if(callback) {
+			callback();
+		}
+	});
+}
+//登出
+function logout() {
+	var loginWebview = pubSysStorage.getData("loginWebview");
+	var msgWebView = plus.webview.getWebviewById('message');
+	var transparentWebView = plus.webview.getWebviewById('transparent.html');
+	
+	//如果当前页面是message detail页面，关闭当前页面
+	if (plus.webview.getWebviewById("message-detail.html")) {
+		plus.webview.getWebviewById("message-detail.html").close();
+	}
+	//如果当前页面是data detail页面，关闭当前页面
+	if (plus.webview.getWebviewById("data-detail.html")) {
+		plus.webview.getWebviewById("data-detail.html").close();
+	}
+	//如果当前页面是offer相关页面，关闭当前页面
+	if (plus.webview.getWebviewById("offer-list.html")) {
+		plus.webview.getWebviewById("offer-list.html").close();
+	}
+	if (plus.webview.getWebviewById("offer-detail.html")) {
+		plus.webview.getWebviewById("offer-detail.html").close();
+	}
+	if (plus.webview.getWebviewById("offer-status.html")) {
+		plus.webview.getWebviewById("offer-status.html").close();
+	}
+	if (plus.webview.getWebviewById("offer-payout.html")) {
+		plus.webview.getWebviewById("offer-payout.html").close();
+	}
+	if (plus.webview.getWebviewById("offer-caps.html")) {
+		plus.webview.getWebviewById("offer-caps.html").close();
+	}
+	if (plus.webview.getWebviewById("offer-geo.html")) {
+		plus.webview.getWebviewById("offer-geo.html").close();
+	}
+	//如果当前页面是登录页，则不刷新
+	if(loginWebview && loginWebview != mui.currentWebview.id) {
+		plus.webview.getWebviewById(loginWebview).evalJS('refresh()');
+	}
+	pubSysStorage.saveData({
+		keepLogin: "",
+		//token: "",
+		messageType : ""
+	});
+	
+	plus.webview.getWebviewById(loginWebview).reload(true);
+	
+	if (transparentWebView) {
+		transparentWebView.close();
+	}
+	
+	if (msgWebView) {
+		msgWebView.close();
+	}
+}
+
+function multiLoginErrorHandle(data) {
+	if(data.flag == 'fail' && data.msg == 'Your account has been logined on other devices.Attention please') {
+		showAlert('Your account has been logined on other devices.Attention please', function() {
+		}, "YeahMobiAPP", "OK");
+		logout();
+		closeWaiting();
+		return true;
+	}
+	return false;
+}
+
+function multiLoginCheck(/*callbackEnter*/) {
+	var token = pubSysStorage.getData("token");
+	var keepLogin = pubSysStorage.getData("keepLogin");
+	var deviceId = pubSysStorage.getData("deviceId");
+	var data = {
+		'access-token': token,
+		'device': deviceId
+	};
+	var callbackEnter = false;
+	if(arguments.length == 1) {
+		callbackEnter = arguments[0];
+	}
+	doAjaxRequest('bind', data, function(responseDevice) {
+		if(callbackEnter) {
+			callbackEnter();
+		}
+	});
+}
+
+function reloadPage() {
+	var currentWebview = plus.webview.currentWebview();
+	var webview = null;
+	if(currentWebview.id == 'message') {
+		var subpages = currentWebview.children();
+		for(var i = 0;i < subpages.length; i++){
+			if(subpages[i].isVisible()) {
+				if(subpages[i].id == 'subpage/message-content.html') {
+					mui.fire(subpages[i], 'loadAgain');
+					return;
+				}
+				webview = subpages[i];
+				break;
+			}
+		}
+	} else if (currentWebview.id == 'data-detail.html') {
+		mui.fire(currentWebview, 'loadAgain');
+		return;
+	} else if (currentWebview.id == 'offer-list.html') {
+		mui.fire(currentWebview, 'loadAgain');
+		return;
+	} else if (currentWebview.id == 'offer-detail.html') {
+		mui.fire(currentWebview, 'loadAgain');
+		return;
+	}
+	
+	if(webview) {
+		webview.reload(true);
+	}
+}

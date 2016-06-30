@@ -1,0 +1,74 @@
+@font-face {
+	font-family: 'icomoon';
+	src:url('../fonts/icomoon.eot?-gabz32');
+	src:url('../fonts/icomoon.eot?#iefix-gabz32') format('embedded-opentype'),
+		url('../fonts/icomoon.woff?-gabz32') format('woff'),
+		url('../fonts/icomoon.ttf?-gabz32') format('truetype'),
+		url('../fonts/icomoon.svg?-gabz32#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	width: auto;
+	height: auto;
+}
+#data-detail [class^="icon-"], [class*=" icon-"] {
+	font-size: 2em;
+	margin-top: 0.1em;
+	line-height: 0.5em;
+	display: -webkit-inline-box;
+}
+.mui-active [class^="icon-"]{
+	color: #ff8023;
+}
+
+.icon-circle:before {
+	content: "\e600";
+}
+.icon-click:before {
+	content: "\e601";
+}
+.icon-conversions:before {
+	content: "\e602";
+}
+.icon-cost:before {
+	content: "\e603";
+}
+.icon-cr:before {
+	content: "\e604";
+}
+.icon-data:before {
+	content: "\e605";
+	font-size: 3em;
+	margin-bottom: 0;
+}
+.icon-message:before {
+	font-size: 3em;
+	content: "\e606";
+}
+.icon-offers:before {
+	font-size: 3em;
+	content: "\e607";
+}
+.icon-profit:before {
+	content: "\e608";
+}
+.icon-revenue:before {
+	content: "\e609";
+}
+.icon-setting:before {
+	font-size: 3em;
+	content: "\e60a";
+}

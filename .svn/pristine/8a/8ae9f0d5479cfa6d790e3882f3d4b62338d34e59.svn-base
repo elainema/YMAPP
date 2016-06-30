@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Setting</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/setting-content.js"></script>
+		<style>
+			html,body {
+				background-color: #ededed;
+			}
+		</style>
+		<script>
+			mui.init();
+		</script>
+	</head>
+	<body>
+		<div class="mui-content setting" id="setting">
+			<h1 class="mui-text-center" style="padding-top:0.5em"><img width="138" src="../images/info.png"></h1>
+			<div class="mui-text-center">
+				Account: <span id="email"></span><br />
+				Name:<span id="name"></span>
+			</div>
+		</div>
+		<button class="mui-btn mui-btn-block loginOut mui-content-padded" id="update">About YeahMobi
+			<span id="updateIcon">
+				<span class="mui-badge mui-badge-dange update">New</span>
+				<a><span class="mui-icon mui-icon-forward"></span></a>
+			<span>
+		</button>
+		<button class="mui-btn mui-btn-block loginOut" id="loginOut">Log Out</button>
+
+	<script>
+	(function($) {
+		$.ready(function() {
+			var updateBtn = document.getElementById("update");
+			$.plusReady(function() {
+				var noNewVersion = function() {
+					showAlert('This is the latest version.', function(){
+					}, "YeahMobiAPP", "OK" );
+				}
+				updateBtn.addEventListener("tap", noNewVersion);
+				update.initUpdate(function(info) {
+					document.getElementById("updateIcon").style.display = "inline-block";
+					updateBtn.removeEventListener('tap', noNewVersion);
+					updateBtn.addEventListener("tap", function() {
+						update.popConfirm(info);
+					});
+				});
+				
+				settingContent.loadUserInfo();
+				
+				//处理Log out
+				getElements("#loginOut", true).addEventListener("tap", function(){
+					unbindDevice();
+					setTimeout(logout, 500);
+				});
+			});
+		});
+	})(mui);
+	</script>
+	<script src="../js/update.js"></script>
+</body>
+</html>

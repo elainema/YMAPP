@@ -1,0 +1,14 @@
+
+var offerCaps = {
+	isActive: function(isActive) {
+		if (isActive) {
+			document.getElementById("caps").style.display = "block";
+		} else {
+			document.getElementById("caps").style.display = "none";
+			document.getElementById("buttons").style.display = "none";
+		}
+	},
+	confirm: function() {
+		
+	}
+}

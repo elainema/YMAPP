@@ -1,0 +1,98 @@
+var token = pubSysStorage.getData('token');
+var deviceId = pubSysStorage.getData('deviceId');
+var offerGeo = {
+	geoModal: function() {
+		var itemValue = "";
+		var item = [];
+		var removeItem = "";
+		var allGeos = document.getElementById('geoes').innerHTML;
+		//点击geo，弹出geo弹窗
+		mui("#offerGeoContent").on("tap", "#selectGeo", function() {
+			document.getElementById("geoBox").style.display = "block";
+		})
+		//geo弹窗点选事件，选中当前项添加到geo列表
+		mui("#geoBox").on("tap", ".mui-table-view-cell", function() {
+			var tapppedValue = this.getAttribute("data-value");
+			mui("#geoBox .mui-table-view-cell").each(function() {
+				this.style.backgroundColor = "#fff";
+			});
+			if (this.classList.contains('mui-active')) {
+				this.classList.remove('mui-active');
+				this.style.backgroundColor = "#fff";
+			} else {
+				this.className = "mui-table-view-cell mui-active";
+			}
+			this.style.backgroundColor = "#ededed";
+			
+			/*//
+			document.getElementById("All").style.backgroundColor = "#fff";
+			document.getElementById("All").classList = "mui-table-view-cell";
+			alert(document.getElementById("All").classList);*/
+			
+			//all和所有选项互斥 
+			if (tapppedValue == "All") {
+				mui("#geoBox .mui-table-view-cell").each(function() {
+					this.style.backgroundColor = "#fff";
+					if (this.classList.contains('mui-active')) {
+						this.classList.remove('mui-active');
+					}
+				});
+				this.className = "mui-table-view-cell mui-active";
+				this.style.backgroundColor = "#ededed";
+			}
+		})
+			
+			
+		document.getElementById("geoConfirm").addEventListener("tap", function() {
+			mui("#geoBox .mui-active").each(function() {
+				itemValue = this.getAttribute("data-value");
+				removeItem = this.id;
+				item = item + '<li class="mui-table-view-cell" id="' + removeItem + '" data-value=' + itemValue + '>' + '<a href="#">' + '<span class="mui-pull-left offerChangeName">' + itemValue + '</span>'+  '<span class="mui-pull-right offerChangeValue">' + '<span class="mui-icon mui-icon-closeempty">' + '</span>' + '</span>' + '<div class="clearfix"></div>'+ '</a>' + '</li>';
+			})
+			document.getElementById("geo").innerHTML = item;
+			document.getElementById("geoBox").style.display = "none";
+			
+			//变量置空
+			itemValue = "";
+			removeItem = "";
+			item = "";
+		})
+	},
+	getGeoList:function(value) {
+		var data = {};
+		doAjaxRequest('geoList', data, function(response) {
+			if (response.flag == "success") {
+				//渲染
+				var html = template('geoList', response);
+				document.getElementById("geoes").innerHTML = html;
+						
+				//标记已选项
+				var existGeos = document.getElementById('geo').innerText;
+				var newExistGeos = existGeos.split("\n");
+				for ( i = 0 ; i < newExistGeos.length; i++){
+					var existGeo = newExistGeos[i];
+					mui("#geoBox .mui-table-view-cell").each(function() {
+						var choiceGeo = this.getAttribute("data-value");
+						if (existGeo == choiceGeo) {
+							this.className = "mui-table-view-cell mui-active";
+						}
+					})
+				}
+			}	
+		})
+	},
+	confirm:function(ids, geoes) {
+		var data = {
+			"access-token": token,
+			"device": deviceId,
+			"id": ids,
+			"country_ids":geoes
+		};
+		doAjaxRequest('setGeo', data, function(response) {
+			log(response)
+			if (response.flag == "success") {
+				closeWaiting();
+			}
+		})
+	}
+}

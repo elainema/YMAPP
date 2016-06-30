@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Setting</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<link rel="stylesheet" href="../css/style.css">
+		<link rel="stylesheet" href="../css/country.css">
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/timerevent.js"></script>
+		<script src="../js/config.js"></script>
+		<script src="../js/common.js"></script>
+		<!--<script src="../js/app.js"></script>-->
+		<style>
+			html,body {
+				background-color: #ffffff;
+				color:#ccc;
+				font-family: "Roboto-Light";
+				height: 100%;
+			}
+		</style>
+		<script>
+		mui.init({
+			keyEventBind: {
+				backbutton: true  
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav offerHead">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+				<span class="detailTitle">Offer edit</span>
+			</a>
+  			<span class="mui-icon mui-icon-reload mui-pull-right reload"></span>
+		</header>
+		<div class="mui-content offerContent" id="offerDeatilContent">
+			<ul class="mui-table-view">
+			   <li class="mui-table-view-cell">
+				   	<div id="offerItem">
+				   	</div>
+			   </li>
+			</ul>
+			<ul class="mui-table-view">
+			   <li class="mui-table-view-cell"  data-name="status">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Staus</span>
+							<span class='mui-pull-right offerChangeValue'>Active</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			   	<li class="mui-table-view-cell"  data-name="payout">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Payout</span>
+							<span class="mui-pull-right offerChangeValue">$3.000</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			   	<li class="mui-table-view-cell"  data-name="caps">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Caps</span>
+							<span class='mui-pull-right offerChangeValue'>Yes</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			   	<li class="mui-table-view-cell"  data-name="redirect">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Readirect</span>
+							<span class='mui-pull-right offerChangeValue'>100400</span>
+							<div class="clearfix"></div>
+						</a>
+					</div>
+			  	</li>
+			   	<li class="mui-table-view-cell"  data-name="geo">
+					<div class="mui-navigate-right">
+						<a href="#">
+							<span class="mui-pull-left offerChangeName">Geo</span>
+							<ul class="mui-pull-right detailCountry">
+								<li>
+									<p class="device-icon country-LB>"></p>
+									<p class="countryName">LB</p>
+								</li>
+								<li>
+									<p class="device-icon country-MG>"></p>
+									<p class="countryName">MG</p>
+								</li>
+								<li>
+									<p class="device-icon country-ML>"></p>
+									<p class="countryName">ML</p>
+								</li>
+							</ul>
+						</a>
+					</div>
+			  	</li>
+			 </ul>
+		</div>
+		<script>
+		mui.ready(function() {
+			mui.plusReady(function() {
+				var item = plus.webview.getWebviewById('offer-detail.html').offerItem;
+				document.getElementById("offerItem").innerHTML = item;
+				mui("#offerDeatilContent").on("tap", ".mui-table-view-cell", function() {
+					var item = this.getAttribute("data-name");
+					var targetPage = "offer-" + "" + item + "" + ".html";
+					mui.openWindow({
+						id : targetPage,
+						url: targetPage,
+						preload: false,
+						waiting:{
+						  autoShow: false,//自动显示等待框，默认为true
+						  title:'Loading...'//等待对话框上显示的提示内容
+						},
+					   show:{
+					      autoShow:true,//页面loaded事件发生后自动显示，默认为true
+					   }
+					});
+				})
+				plus.webview.currentWebview().setStyle({scrollIndicator:'none'}); //隐藏滚动条
+			})
+		})
+		</script>
+	</body>
+</html>
